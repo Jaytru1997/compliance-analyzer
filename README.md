@@ -15,8 +15,6 @@ This repository uses Turborepo for monorepo management. It contains:
 ### Authentication
 
 - A default admin user is seeded into the MongoDB database upon startup.
-- **Username:** `admin`
-- **Password:** `admin123`
 
 ## Guides
 
