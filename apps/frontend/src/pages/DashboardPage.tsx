@@ -23,14 +23,20 @@ const DashboardPage: React.FC = () => {
   const [documents, setDocuments] = useState<DocumentMetadata[]>([]);
   const [loading, setLoading] = useState(true);
   const [showUpload, setShowUpload] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
   const loadDocuments = async () => {
     try {
+      setError(null);
       const docs = await fetchDocuments();
-      setDocuments(docs);
-    } catch {
+      // Ensure docs is an array, fallback to empty array if not
+      setDocuments(Array.isArray(docs) ? docs : []);
+    } catch (err) {
       // backend may not be up yet
+      console.error('Failed to fetch documents:', err);
+      setDocuments([]);
+      setError('Unable to load documents. Please ensure the backend is running.');
     } finally {
       setLoading(false);
     }
@@ -43,11 +49,19 @@ const DashboardPage: React.FC = () => {
     setShowUpload(false);
   };
 
-  const procedures = documents.filter((d) => d.complianceCategory === 'Procedure');
-  const standards = documents.filter((d) => d.complianceCategory === 'Standard');
+  // Safely filter documents - ensure it's an array
+  const procedures = Array.isArray(documents) ? documents.filter((d) => d.complianceCategory === 'Procedure') : [];
+  const standards = Array.isArray(documents) ? documents.filter((d) => d.complianceCategory === 'Standard') : [];
 
   return (
     <AppLayout>
+      {/* Error Alert */}
+      {error && (
+        <Alert severity="error" sx={{ mb: 3 }} onClose={() => setError(null)}>
+          {error}
+        </Alert>
+      )}
+
       {/* Hero Header */}
       <Box
         sx={{

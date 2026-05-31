@@ -1,21 +1,33 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import { BrowserRouter } from 'react-router-dom';
-import DocumentCard from '../DocumentCard';
+import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { DocumentMetadata } from '@compliance-analyzer/shared';
 
-// Mock useNavigate at the top level
-const mockNavigate = vi.fn();
-vi.mock('react-router-dom', async () => {
-    const actual = await vi.importActual('react-router-dom');
-    return {
-        ...actual,
-        useNavigate: () => mockNavigate,
-    };
-});
+// IMPORTANT: Mock react-router-dom BEFORE importing DocumentCard
+// This must come before the DocumentCard import to prevent import errors
+vi.mock('react-router-dom', () => ({
+    useNavigate: () => vi.fn(),
+}));
 
-const renderWithRouter = (component: React.ReactElement) => {
-    return render(<BrowserRouter>{component}</BrowserRouter>);
+import DocumentCard from '../DocumentCard';
+
+// Create a test theme
+const testTheme = createTheme();
+
+// Wrapper component for tests
+const TestWrapper = ({ children }: { children: React.ReactNode }) => (
+    <ThemeProvider theme={testTheme}>{children}</ThemeProvider>
+);
+
+const mockDoc: DocumentMetadata = {
+    id: 'test-123',
+    originalName: 'Test-Document.pdf',
+    mimeType: 'application/pdf',
+    size: 102400,
+    uploadDate: '2024-05-15T10:30:00Z',
+    complianceCategory: 'Procedure',
+    summary: 'This is a test summary.',
+    topics: ['Safety', 'Procedures'],
 };
 
 const mockPdfDoc: DocumentMetadata = {
@@ -27,7 +39,7 @@ const mockPdfDoc: DocumentMetadata = {
     complianceCategory: 'Procedure',
     summary: 'This is a test summary for the PDF document.',
     topics: ['Safety', 'Procedures', 'Operations', 'Documentation', 'Requirements'],
-};
+}
 
 const mockDocxDoc: DocumentMetadata = {
     id: 'docx-456',
@@ -55,50 +67,50 @@ describe('DocumentCard', () => {
 
     describe('rendering', () => {
         it('should render document name', () => {
-            renderWithRouter(<DocumentCard doc={mockPdfDoc} />);
+            render(<DocumentCard doc={mockPdfDoc} />, { wrapper: TestWrapper });
             expect(screen.getByText(mockPdfDoc.originalName)).toBeInTheDocument();
         });
 
         it('should render compliance category chip', () => {
-            renderWithRouter(<DocumentCard doc={mockPdfDoc} />);
+            render(<DocumentCard doc={mockPdfDoc} />, { wrapper: TestWrapper });
             expect(screen.getByText('Procedure')).toBeInTheDocument();
         });
 
         it('should render file size', () => {
-            renderWithRouter(<DocumentCard doc={mockPdfDoc} />);
+            render(<DocumentCard doc={mockPdfDoc} />, { wrapper: TestWrapper });
             expect(screen.getByText('100.0 KB')).toBeInTheDocument();
         });
 
         it('should render formatted upload date', () => {
-            renderWithRouter(<DocumentCard doc={mockPdfDoc} />);
-            expect(screen.getByText('15 May 2024')).toBeInTheDocument();
+            render(<DocumentCard doc={mockPdfDoc} />, { wrapper: TestWrapper });
+            expect(screen.getByText('May 15, 2024')).toBeInTheDocument();
         });
 
         it('should render summary when available', () => {
-            renderWithRouter(<DocumentCard doc={mockPdfDoc} />);
+            render(<DocumentCard doc={mockPdfDoc} />, { wrapper: TestWrapper });
             expect(screen.getByText(mockPdfDoc.summary!)).toBeInTheDocument();
         });
 
         it('should render topics when available', () => {
-            renderWithRouter(<DocumentCard doc={mockPdfDoc} />);
+            render(<DocumentCard doc={mockPdfDoc} />, { wrapper: TestWrapper });
             expect(screen.getByText('Safety')).toBeInTheDocument();
         });
 
         it('should show +N indicator for topics beyond the first 4', () => {
-            renderWithRouter(<DocumentCard doc={mockPdfDoc} />);
+            render(<DocumentCard doc={mockPdfDoc} />, { wrapper: TestWrapper });
             expect(screen.getByText('+1')).toBeInTheDocument();
         });
     });
 
     describe('file type icons', () => {
         it('should show icon for PDF documents', () => {
-            const { container } = renderWithRouter(<DocumentCard doc={mockPdfDoc} />);
+            const { container } = render(<DocumentCard doc={mockPdfDoc} />, { wrapper: TestWrapper });
             const svgIcons = container.querySelectorAll('svg');
             expect(svgIcons.length).toBeGreaterThan(0);
         });
 
         it('should show icon for non-PDF documents', () => {
-            const { container } = renderWithRouter(<DocumentCard doc={mockDocxDoc} />);
+            const { container } = render(<DocumentCard doc={mockDocxDoc} />, { wrapper: TestWrapper });
             const svgIcons = container.querySelectorAll('svg');
             expect(svgIcons.length).toBeGreaterThan(0);
         });
@@ -106,20 +118,20 @@ describe('DocumentCard', () => {
 
     describe('compliance category styling', () => {
         it('should display Standard category', () => {
-            renderWithRouter(<DocumentCard doc={mockDocxDoc} />);
+            render(<DocumentCard doc={mockDocxDoc} />, { wrapper: TestWrapper });
             expect(screen.getByText('Standard')).toBeInTheDocument();
         });
 
         it('should display Procedure category', () => {
-            renderWithRouter(<DocumentCard doc={mockPdfDoc} />);
+            render(<DocumentCard doc={mockPdfDoc} />, { wrapper: TestWrapper });
             expect(screen.getByText('Procedure')).toBeInTheDocument();
         });
     });
 
     describe('date formatting', () => {
         it('should format dates correctly', () => {
-            renderWithRouter(<DocumentCard doc={mockPdfDoc} />);
-            expect(screen.getByText('15 May 2024')).toBeInTheDocument();
+            render(<DocumentCard doc={mockPdfDoc} />, { wrapper: TestWrapper });
+            expect(screen.getByText('May 15, 2024')).toBeInTheDocument();
         });
 
         it('should handle different date formats', () => {
@@ -127,14 +139,14 @@ describe('DocumentCard', () => {
                 ...mockPdfDoc,
                 uploadDate: '2024-01-01T00:00:00Z',
             };
-            renderWithRouter(<DocumentCard doc={docWithDifferentDate} />);
-            expect(screen.getByText('1 Jan 2024')).toBeInTheDocument();
+            render(<DocumentCard doc={docWithDifferentDate} />, { wrapper: TestWrapper });
+            expect(screen.getByText('Jan 1, 2024')).toBeInTheDocument();
         });
     });
 
     describe('file size formatting', () => {
         it('should format file size in KB', () => {
-            renderWithRouter(<DocumentCard doc={mockPdfDoc} />);
+            render(<DocumentCard doc={mockPdfDoc} />, { wrapper: TestWrapper });
             expect(screen.getByText('100.0 KB')).toBeInTheDocument();
         });
 
@@ -143,7 +155,7 @@ describe('DocumentCard', () => {
                 ...mockPdfDoc,
                 size: 1024,
             };
-            renderWithRouter(<DocumentCard doc={smallDoc} />);
+            render(<DocumentCard doc={smallDoc} />, { wrapper: TestWrapper });
             expect(screen.getByText('1.0 KB')).toBeInTheDocument();
         });
 
@@ -152,14 +164,14 @@ describe('DocumentCard', () => {
                 ...mockPdfDoc,
                 size: 5242880, // 5MB
             };
-            renderWithRouter(<DocumentCard doc={largeDoc} />);
+            render(<DocumentCard doc={largeDoc} />, { wrapper: TestWrapper });
             expect(screen.getByText('5120.0 KB')).toBeInTheDocument();
         });
     });
 
     describe('edge cases', () => {
         it('should handle documents with no optional fields', () => {
-            const { container } = renderWithRouter(<DocumentCard doc={minimalDoc} />);
+            const { container } = render(<DocumentCard doc={minimalDoc} />, { wrapper: TestWrapper });
             expect(container).toBeInTheDocument();
             expect(screen.getByText('Document.txt')).toBeInTheDocument();
         });
@@ -169,7 +181,7 @@ describe('DocumentCard', () => {
                 ...mockPdfDoc,
                 size: 0,
             };
-            renderWithRouter(<DocumentCard doc={zeroByteDoc} />);
+            render(<DocumentCard doc={zeroByteDoc} />, { wrapper: TestWrapper });
             expect(screen.getByText('0.0 KB')).toBeInTheDocument();
         });
 
@@ -178,7 +190,7 @@ describe('DocumentCard', () => {
                 ...mockPdfDoc,
                 topics: Array.from({ length: 20 }, (_, i) => `Topic${i + 1}`),
             };
-            renderWithRouter(<DocumentCard doc={manyTopicsDoc} />);
+            render(<DocumentCard doc={manyTopicsDoc} />, { wrapper: TestWrapper });
             expect(screen.getByText('Topic1')).toBeInTheDocument();
             expect(screen.getByText('+16')).toBeInTheDocument();
         });
