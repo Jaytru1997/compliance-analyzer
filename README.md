@@ -5,6 +5,7 @@ A full-stack application designed to help mining safety compliance auditors anal
 ## Overview
 
 This repository uses Turborepo for monorepo management. It contains:
+
 - `apps/frontend`: React 18, TypeScript, Vite, Material-UI v6, Zustand. Features **Code Splitting** for optimized performance.
 - `apps/backend`: Node.js, Express, TypeScript, **Mongoose/MongoDB** for persistent storage.
 - `AI Integration`: Anthropic Claude API for reasoning (`claude-3-5-sonnet`), **SSE Streaming** for real-time Q&A, and **OpenAI `text-embedding-3-small`** for real vector RAG (with automatic fallback to keyword scoring).
@@ -12,6 +13,7 @@ This repository uses Turborepo for monorepo management. It contains:
 - `guides/`: Complete documentation describing architecture, AI RAG setup, prompt engineering, and more.
 
 ### Authentication
+
 - A default admin user is seeded into the MongoDB database upon startup.
 - **Username:** `admin`
 - **Password:** `admin123`
