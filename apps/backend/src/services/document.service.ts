@@ -7,11 +7,12 @@ import { DocumentModel } from '../models/document.model';
 export class DocumentService {
   /**
    * Full ingestion pipeline:
-   * 1. Parse raw text from file
-   * 2. Generate AI summary + topics
-   * 3. Chunk text using hybrid strategy
-   * 4. Embed chunks with text-embedding-3-small and store in MongoDB
-   * 5. Persist DocumentMetadata to MongoDB
+   * 1. Parse raw text from file (PDF, DOCX, TXT)
+   * 2. Generate AI summary + topics via Claude
+   * 3. Chunk text using hybrid strategy (semantic + fixed-size with overlap)
+   * 4. Embed chunks locally with all-MiniLM-L6-v2 (384-dim)
+   * 5. Compute BM25 term frequencies for keyword retrieval
+   * 6. Persist everything to MongoDB
    */
   async ingestDocument(
     file: Express.Multer.File,
@@ -37,7 +38,7 @@ export class DocumentService {
     // Use the MongoDB ObjectId as our documentId for chunk metadata
     const documentId = (doc._id as { toString(): string }).toString();
 
-    // 4. Chunk, embed, and store in MongoDB
+    // 4. Chunk, embed (local model), compute BM25 term frequencies, and store in MongoDB
     const chunks = ragService.chunkText(text, {
       documentId,
       title: file.originalname,
@@ -77,6 +78,21 @@ export class DocumentService {
       summary: doc.summary,
       topics: doc.topics,
     } as DocumentMetadata;
+  }
+
+  async deleteDocument(id: string): Promise<boolean> {
+    try {
+      // 1. Delete all chunks associated with this document
+      await ragService.deleteChunksForDocument(id);
+      
+      // 2. Delete the document metadata
+      const result = await DocumentModel.findByIdAndDelete(id);
+      
+      return !!result;
+    } catch (error) {
+      console.error(`[DocumentService] Error deleting document ${id}:`, error);
+      throw error;
+    }
   }
 }
 

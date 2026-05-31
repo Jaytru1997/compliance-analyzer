@@ -45,7 +45,7 @@ const LoginPage: React.FC = () => {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        background: 'linear-gradient(135deg, #0a0f1e 0%, #0d1b2a 60%, #0a1628 100%)',
+        backgroundColor: '#f8fafc', // Slate 50
         px: 2,
         position: 'relative',
         overflow: 'hidden',
@@ -55,7 +55,7 @@ const LoginPage: React.FC = () => {
           width: 600,
           height: 600,
           borderRadius: '50%',
-          background: 'radial-gradient(circle, rgba(99,102,241,0.12) 0%, transparent 70%)',
+          background: 'radial-gradient(circle, rgba(15,23,42,0.03) 0%, transparent 70%)',
           top: -200,
           right: -200,
           pointerEvents: 'none',
@@ -66,7 +66,7 @@ const LoginPage: React.FC = () => {
           width: 400,
           height: 400,
           borderRadius: '50%',
-          background: 'radial-gradient(circle, rgba(16,185,129,0.08) 0%, transparent 70%)',
+          background: 'radial-gradient(circle, rgba(37,99,235,0.03) 0%, transparent 70%)',
           bottom: -100,
           left: -100,
           pointerEvents: 'none',
@@ -74,8 +74,8 @@ const LoginPage: React.FC = () => {
       }}
     >
       <Fade in timeout={800}>
-        <Card sx={{ width: '100%', maxWidth: 440, p: 1, position: 'relative', zIndex: 1 }}>
-          <CardContent sx={{ p: 4 }}>
+        <Card sx={{ width: '100%', maxWidth: 420, p: 1, position: 'relative', zIndex: 1, boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)', border: '1px solid #e2e8f0' }}>
+          <CardContent sx={{ p: { xs: 3, sm: 5 } }}>
             {/* Logo / Brand */}
             <Box sx={{ textAlign: 'center', mb: 4 }}>
               <Box
@@ -83,20 +83,19 @@ const LoginPage: React.FC = () => {
                   display: 'inline-flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  width: 64,
-                  height: 64,
-                  borderRadius: '16px',
-                  background: 'linear-gradient(135deg, #6366f1, #818cf8)',
-                  boxShadow: '0 8px 32px rgba(99,102,241,0.4)',
+                  width: 56,
+                  height: 56,
+                  borderRadius: '12px',
+                  backgroundColor: '#0f172a',
                   mb: 2,
                 }}
               >
-                <Security sx={{ fontSize: 32, color: '#fff' }} />
+                <Security sx={{ fontSize: 28, color: '#ffffff' }} />
               </Box>
-              <Typography variant="h4" fontWeight={700} gutterBottom>
+              <Typography variant="h4" fontWeight={700} gutterBottom color="#0f172a" sx={{ letterSpacing: '-0.02em' }}>
                 ComplianceAI
               </Typography>
-              <Typography variant="body2" color="text.secondary">
+              <Typography variant="body2" color="#64748b">
                 Mining Safety Document Analyzer
               </Typography>
             </Box>
@@ -120,6 +119,7 @@ const LoginPage: React.FC = () => {
                 required
                 autoFocus
                 fullWidth
+                size="medium"
               />
 
               <TextField
@@ -130,6 +130,7 @@ const LoginPage: React.FC = () => {
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 fullWidth
+                size="medium"
                 InputProps={{
                   endAdornment: (
                     <InputAdornment position="end">
@@ -149,14 +150,14 @@ const LoginPage: React.FC = () => {
                 size="large"
                 disabled={loading}
                 startIcon={<AutoAwesome />}
-                sx={{ mt: 1 }}
+                sx={{ mt: 1, backgroundColor: '#0f172a', '&:hover': { backgroundColor: '#1e293b' } }}
               >
                 {loading ? 'Signing in…' : 'Sign In'}
               </Button>
             </Box>
 
-            <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 3, textAlign: 'center' }}>
-              Demo credentials: <strong>admin</strong> / <strong>admin123</strong>
+            <Typography variant="caption" color="#94a3b8" sx={{ display: 'block', mt: 4, textAlign: 'center' }}>
+              Demo credentials: <Box component="span" sx={{ color: '#475569', fontWeight: 600 }}>admin</Box> / <Box component="span" sx={{ color: '#475569', fontWeight: 600 }}>admin123</Box>
             </Typography>
           </CardContent>
         </Card>

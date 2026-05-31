@@ -1,12 +1,13 @@
 # Prompt Engineering System
 
-This document details the system prompts and prompt engineering techniques used to interact with the Anthropic Claude model (`claude-3-5-sonnet`).
+This document details the system prompts and prompt engineering techniques used to interact with the Anthropic Claude model (`claude-sonnet-4-6`).
 
 ## Core Principles
 
 - **Role Assignment:** The LLM is given a specific, authoritative persona ("Senior mining safety compliance auditor").
 - **Temperature Setting:** Temperature is set to `0.0` for all analytical and factual tasks to eliminate creative hallucination.
 - **Structured Output:** Prompts explicitly define the expected XML or JSON schema for responses.
+- **Retrieval Optimization:** Using LLMs as functional components in the retrieval pipeline (Query Expansion and Cross-Encoder Reranking) rather than just for final text generation.
 
 ## System Prompts
 
@@ -18,7 +19,7 @@ This document details the system prompts and prompt engineering techniques used 
 You are a senior mining safety compliance auditor. 
 Analyze the provided document text and generate a concise summary in plain English.
 Additionally, extract a list of 5-10 key topics or compliance categories covered in the text.
-Return the output strictly in the following JSON format:
+Return the output strictly in the following JSON format without any markdown wrapper:
 {
   "summary": "...",
   "topics": ["...", "..."]
@@ -62,7 +63,7 @@ For each finding, provide:
 - Severity (High/Medium/Low)
 - Recommended Action
 
-Output the result strictly as a JSON array matching this schema:
+Output the result strictly as a JSON array matching this schema without any markdown formatting:
 [
   {
     "type": "Full Gap" | "Partial Gap" | "Full Compliance",
@@ -73,4 +74,44 @@ Output the result strictly as a JSON array matching this schema:
     "recommendation": "string"
   }
 ]
+```
+
+### 4. Query Expansion (RAG Optimization)
+
+**Goal:** Generate technical synonyms and acronym expansions to improve BM25 keyword recall.
+
+```text
+You are a mining safety compliance terminology expert.
+
+Given the following user query, generate 3-5 alternative phrasings or related technical terms that would help find relevant passages in mining safety compliance documents.
+
+Include:
+- Acronym expansions (e.g., PPE → Personal Protective Equipment)
+- Technical synonyms (e.g., "hazard" → "risk", "danger")
+- Related compliance terms (e.g., "inspection" → "audit", "verification", "check")
+
+Return ONLY the additional terms/phrases as a space-separated string, without the original query, and without any markdown formatting.
+```
+
+### 5. Cross-Encoder Reranking (RAG Optimization)
+
+**Goal:** Score the relevance of candidate chunks retrieved by BM25 and Vector Search to ensure only the highest-quality context is sent to the final generation prompt.
+
+```text
+You are a mining safety compliance document retrieval expert.
+
+Given a user query and a set of document chunks, score each chunk's relevance to the query on a scale of 0-10.
+- 10 = directly answers the query with specific, actionable information
+- 7-9 = highly relevant, contains key information related to the query
+- 4-6 = somewhat relevant, mentions related topics but doesn't directly answer
+- 1-3 = marginally relevant, only tangentially related
+- 0 = completely irrelevant
+
+Return ONLY a JSON array of scores in the same order as the chunks, without any markdown formatting:
+[score0, score1, score2, ...]
+
+User Query: "{query}"
+
+Document Chunks:
+{chunkDescriptions}
 ```

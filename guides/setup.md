@@ -7,6 +7,7 @@ This guide provides instructions for setting up the AI-Powered Compliance Docume
 - Node.js (v18 or higher recommended)
 - pnpm or npm (This project uses npm workspaces/Turborepo)
 - An active Anthropic API Key (with access to Claude 3.5 Sonnet model)
+- *Note: No OpenAI API key is needed; the embedding model runs locally in Node.js.*
 
 ## Installation
 
@@ -47,6 +48,8 @@ This repository uses Turborepo to run multiple apps concurrently.
    This will simultaneously start:
    - **Frontend:** Typically accessible at `http://localhost:5173`
    - **Backend API:** Typically accessible at `http://localhost:3001`
+   
+   *Note: On first startup, the backend will download the `all-MiniLM-L6-v2` embedding model (~30MB) and cache it locally.*
 
 2. **Accessing the App:**
    Open your browser and navigate to `http://localhost:5173`.

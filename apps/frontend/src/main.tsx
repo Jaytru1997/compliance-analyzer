@@ -1,4 +1,5 @@
 import React, { Suspense, lazy } from 'react';
+import './index.css';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { ThemeProvider } from '@mui/material/styles';

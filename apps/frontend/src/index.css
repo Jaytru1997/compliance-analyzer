@@ -1,0 +1,67 @@
+@font-face {
+  font-family: 'Untitled Sans';
+  src: url('/fonts/TestUntitledSans-Regular-BF664576c4080d1.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Untitled Sans';
+  src: url('/fonts/TestUntitledSans-RegularItalic-BF664576c41a34a.otf') format('opentype');
+  font-weight: 400;
+  font-style: italic;
+}
+@font-face {
+  font-family: 'Untitled Sans';
+  src: url('/fonts/TestUntitledSans-Medium-BF664576c414505.otf') format('opentype');
+  font-weight: 500;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Untitled Sans';
+  src: url('/fonts/TestUntitledSans-MediumItalic-BF664576c428ddc.otf') format('opentype');
+  font-weight: 500;
+  font-style: italic;
+}
+@font-face {
+  font-family: 'Untitled Sans';
+  src: url('/fonts/TestUntitledSans-Bold-BF664576c3d01a7.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Untitled Sans';
+  src: url('/fonts/TestUntitledSans-BoldItalic-BF664576c4430eb.otf') format('opentype');
+  font-weight: 700;
+  font-style: italic;
+}
+@font-face {
+  font-family: 'Untitled Sans';
+  src: url('/fonts/TestUntitledSans-Black-BF664576c3cc132.otf') format('opentype');
+  font-weight: 900;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Untitled Sans';
+  src: url('/fonts/TestUntitledSans-BlackItalic-BF664576c40273c.otf') format('opentype');
+  font-weight: 900;
+  font-style: italic;
+}
+@font-face {
+  font-family: 'Untitled Sans';
+  src: url('/fonts/TestUntitledSans-Light-BF664576c40f710.otf') format('opentype');
+  font-weight: 300;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Untitled Sans';
+  src: url('/fonts/TestUntitledSans-LightItalic-BF664576c3f40a6.otf') format('opentype');
+  font-weight: 300;
+  font-style: italic;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Untitled Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  background-color: #f8fafc; /* subtle off-white */
+}

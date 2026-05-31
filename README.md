@@ -8,7 +8,7 @@ This repository uses Turborepo for monorepo management. It contains:
 
 - `apps/frontend`: React 18, TypeScript, Vite, Material-UI v6, Zustand. Features **Code Splitting** for optimized performance.
 - `apps/backend`: Node.js, Express, TypeScript, **Mongoose/MongoDB** for persistent storage.
-- `AI Integration`: Anthropic Claude API for reasoning (`claude-3-5-sonnet`), **SSE Streaming** for real-time Q&A, and **OpenAI `text-embedding-3-small`** for real vector RAG (with automatic fallback to keyword scoring).
+- `AI Integration`: Anthropic Claude API for reasoning (`claude-sonnet-4-6`), **SSE Streaming** for real-time Q&A, and a **multi-stage hybrid RAG pipeline** featuring local dense embeddings (`all-MiniLM-L6-v2`), Okapi BM25, Reciprocal Rank Fusion, and Claude-based cross-encoder reranking.
 - `docs/`: Storage for mock ACME procedures and Recognized Standards.
 - `guides/`: Complete documentation describing architecture, AI RAG setup, prompt engineering, and more.
 

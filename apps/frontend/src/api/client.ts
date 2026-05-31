@@ -33,6 +33,10 @@ export const fetchDocument = async (id: string): Promise<DocumentMetadata> => {
   return data;
 };
 
+export const deleteDocument = async (id: string): Promise<void> => {
+  await api.delete(`/documents/${id}`);
+};
+
 // ── Chat (Streaming) ─────────────────────────────────────
 export interface ChatSource {
   section: string;

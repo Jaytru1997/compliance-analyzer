@@ -11,12 +11,12 @@ import {
   Skeleton,
   Alert,
 } from '@mui/material';
-import { Add, FolderOpen, Analytics } from '@mui/icons-material';
+import { Add, FolderOpen, Analytics, UploadFile } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import AppLayout from '../components/AppLayout';
 import UploadZone from '../components/UploadZone';
 import DocumentCard from '../components/DocumentCard';
-import { fetchDocuments } from '../api/client';
+import { fetchDocuments, deleteDocument } from '../api/client';
 import { DocumentMetadata } from '@compliance-analyzer/shared';
 
 const DashboardPage: React.FC = () => {
@@ -33,7 +33,6 @@ const DashboardPage: React.FC = () => {
       // Ensure docs is an array, fallback to empty array if not
       setDocuments(Array.isArray(docs) ? docs : []);
     } catch (err) {
-      // backend may not be up yet
       console.error('Failed to fetch documents:', err);
       setDocuments([]);
       setError('Unable to load documents. Please ensure the backend is running.');
@@ -49,6 +48,16 @@ const DashboardPage: React.FC = () => {
     setShowUpload(false);
   };
 
+  const handleDelete = async (id: string) => {
+    try {
+      await deleteDocument(id);
+      setDocuments((prev) => prev.filter((d) => d.id !== id));
+    } catch (err) {
+      console.error('Failed to delete document:', err);
+      setError('Failed to delete document.');
+    }
+  };
+
   // Safely filter documents - ensure it's an array
   const procedures = Array.isArray(documents) ? documents.filter((d) => d.complianceCategory === 'Procedure') : [];
   const standards = Array.isArray(documents) ? documents.filter((d) => d.complianceCategory === 'Standard') : [];
@@ -62,41 +71,21 @@ const DashboardPage: React.FC = () => {
         </Alert>
       )}
 
-      {/* Hero Header */}
-      <Box
-        sx={{
-          mb: 5,
-          p: 4,
-          borderRadius: 3,
-          background: 'linear-gradient(135deg, rgba(99,102,241,0.15) 0%, rgba(16,185,129,0.08) 100%)',
-          border: '1px solid rgba(99,102,241,0.2)',
-          position: 'relative',
-          overflow: 'hidden',
-          '&::before': {
-            content: '""',
-            position: 'absolute',
-            width: 300,
-            height: 300,
-            borderRadius: '50%',
-            background: 'radial-gradient(circle, rgba(99,102,241,0.1) 0%, transparent 70%)',
-            top: -100,
-            right: -50,
-          },
-        }}
-      >
-        <Typography variant="h3" fontWeight={700} gutterBottom sx={{ letterSpacing: '-0.5px' }}>
+      {/* Hero Header - Analytical, Clean */}
+      <Box sx={{ mb: 5, pt: 2 }}>
+        <Typography variant="h3" fontWeight={700} gutterBottom sx={{ letterSpacing: '-0.02em', color: '#0f172a' }}>
           Compliance Dashboard
         </Typography>
-        <Typography variant="body1" color="text.secondary" sx={{ mb: 3, maxWidth: 560 }}>
-          Upload mining safety procedures and recognised standards. Get AI-powered summaries,
-          interactive Q&amp;A, and detailed gap analysis reports.
+        <Typography variant="body1" sx={{ color: '#475569', mb: 3, maxWidth: 640, fontSize: '1.1rem' }}>
+          Upload mining safety procedures and recognised standards to analyze gaps and run interactive compliance Q&amp;A.
         </Typography>
 
         <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
           <Button
             id="btn-upload-document"
             variant="contained"
-            startIcon={<Add />}
+            color="primary"
+            startIcon={<UploadFile />}
             onClick={() => setShowUpload((s) => !s)}
           >
             Upload Document
@@ -106,6 +95,7 @@ const DashboardPage: React.FC = () => {
             variant="outlined"
             startIcon={<Analytics />}
             onClick={() => navigate('/gap-analysis')}
+            sx={{ borderColor: '#cbd5e1', color: '#334155', '&:hover': { borderColor: '#94a3b8', backgroundColor: '#f1f5f9' } }}
           >
             Run Gap Analysis
           </Button>
@@ -114,9 +104,9 @@ const DashboardPage: React.FC = () => {
 
       {/* Upload Zone Collapse */}
       <Collapse in={showUpload}>
-        <Card sx={{ mb: 4 }}>
-          <CardContent sx={{ p: 3 }}>
-            <Typography variant="h6" fontWeight={600} gutterBottom>
+        <Card sx={{ mb: 4, borderStyle: 'dashed', backgroundColor: '#fafaf9' }}>
+          <CardContent sx={{ p: 4 }}>
+            <Typography variant="h6" fontWeight={600} gutterBottom color="#1c1917">
               Upload Compliance Document
             </Typography>
             <UploadZone onUploaded={handleUploaded} />
@@ -125,20 +115,20 @@ const DashboardPage: React.FC = () => {
       </Collapse>
 
       {/* Stats Row */}
-      <Grid container spacing={3} sx={{ mb: 4 }}>
+      <Grid container spacing={3} sx={{ mb: 5 }}>
         {[
-          { label: 'Total Documents', value: documents.length, color: '#6366f1' },
-          { label: 'ACME Procedures', value: procedures.length, color: '#818cf8' },
-          { label: 'Recognised Standards', value: standards.length, color: '#10b981' },
+          { label: 'Total Documents', value: documents.length },
+          { label: 'ACME Procedures', value: procedures.length },
+          { label: 'Recognised Standards', value: standards.length },
         ].map((stat) => (
           <Grid item xs={12} sm={4} key={stat.label}>
-            <Card>
-              <CardContent sx={{ p: 2.5 }}>
-                <Typography variant="h3" fontWeight={700} sx={{ color: stat.color, lineHeight: 1 }}>
-                  {stat.value}
-                </Typography>
-                <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+            <Card sx={{ boxShadow: 'none' }}>
+              <CardContent sx={{ p: 3, display: 'flex', flexDirection: 'column', gap: 0.5 }}>
+                <Typography variant="body2" sx={{ color: '#64748b', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', fontSize: '0.75rem' }}>
                   {stat.label}
+                </Typography>
+                <Typography variant="h3" fontWeight={700} sx={{ color: '#0f172a', lineHeight: 1 }}>
+                  {stat.value}
                 </Typography>
               </CardContent>
             </Card>
@@ -146,6 +136,11 @@ const DashboardPage: React.FC = () => {
         ))}
       </Grid>
 
+      <Box sx={{ mb: 3, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <Typography variant="h5" fontWeight={600} color="#0f172a">
+          Document Library
+        </Typography>
+      </Box>
       <Divider sx={{ mb: 4 }} />
 
       {/* Documents Grid */}
@@ -153,7 +148,7 @@ const DashboardPage: React.FC = () => {
         <Grid container spacing={3}>
           {[1, 2, 3].map((k) => (
             <Grid item xs={12} sm={6} lg={4} key={k}>
-              <Skeleton variant="rounded" height={220} sx={{ borderRadius: 3 }} />
+              <Skeleton variant="rounded" height={220} sx={{ borderRadius: 2 }} />
             </Grid>
           ))}
         </Grid>
@@ -161,16 +156,18 @@ const DashboardPage: React.FC = () => {
         <Box
           sx={{
             textAlign: 'center',
-            py: 10,
-            opacity: 0.6,
+            py: 12,
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
             gap: 2,
+            backgroundColor: '#ffffff',
+            border: '1px dashed #cbd5e1',
+            borderRadius: 2,
           }}
         >
-          <FolderOpen sx={{ fontSize: 64, color: 'text.secondary' }} />
-          <Typography variant="h6" color="text.secondary">
+          <FolderOpen sx={{ fontSize: 48, color: '#94a3b8' }} />
+          <Typography variant="h6" color="#475569">
             No documents yet — upload your first one above
           </Typography>
         </Box>
@@ -178,7 +175,7 @@ const DashboardPage: React.FC = () => {
         <Grid container spacing={3}>
           {documents.map((doc) => (
             <Grid item xs={12} sm={6} lg={4} key={doc.id}>
-              <DocumentCard doc={doc} />
+              <DocumentCard doc={doc} onDelete={handleDelete} />
             </Grid>
           ))}
         </Grid>

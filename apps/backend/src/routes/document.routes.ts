@@ -22,16 +22,37 @@ router.post('/upload', upload.single('file'), async (req, res) => {
   }
 });
 
-router.get('/', (req, res) => {
-  res.json(documentService.getDocuments());
+router.get('/', async (req, res) => {
+  try {
+    res.json(await documentService.getDocuments());
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
 });
 
-router.get('/:id', (req, res) => {
-  const doc = documentService.getDocumentById(req.params.id);
-  if (doc) {
-    res.json(doc);
-  } else {
-    res.status(404).json({ error: 'Document not found' });
+router.get('/:id', async (req, res) => {
+  try {
+    const doc = await documentService.getDocumentById(req.params.id);
+    if (doc) {
+      res.json(doc);
+    } else {
+      res.status(404).json({ error: 'Document not found' });
+    }
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+router.delete('/:id', async (req, res) => {
+  try {
+    const success = await documentService.deleteDocument(req.params.id);
+    if (success) {
+      res.json({ message: 'Document deleted successfully' });
+    } else {
+      res.status(404).json({ error: 'Document not found' });
+    }
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
   }
 });
 

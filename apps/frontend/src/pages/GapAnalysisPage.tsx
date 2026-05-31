@@ -40,13 +40,13 @@ import { DocumentMetadata, GapAnalysisFinding } from '@compliance-analyzer/share
 const severityColor = (s: string) => {
   if (s === 'High') return '#ef4444';
   if (s === 'Medium') return '#f59e0b';
-  return '#22c55e';
+  return '#10b981';
 };
 
 const typeIcon = (type: string) => {
-  if (type === 'Full Compliance') return <CheckCircle sx={{ fontSize: 18, color: '#22c55e' }} />;
-  if (type === 'Partial Gap') return <Warning sx={{ fontSize: 18, color: '#f59e0b' }} />;
-  return <ErrorIcon sx={{ fontSize: 18, color: '#ef4444' }} />;
+  if (type === 'Full Compliance') return <CheckCircle sx={{ fontSize: 20, color: '#10b981' }} />;
+  if (type === 'Partial Gap') return <Warning sx={{ fontSize: 20, color: '#f59e0b' }} />;
+  return <ErrorIcon sx={{ fontSize: 20, color: '#ef4444' }} />;
 };
 
 const GapAnalysisPage: React.FC = () => {
@@ -58,7 +58,9 @@ const GapAnalysisPage: React.FC = () => {
   const [error, setError] = useState('');
 
   useEffect(() => {
-    fetchDocuments().then(setDocuments).catch(() => {});
+    fetchDocuments()
+      .then((docs) => setDocuments(Array.isArray(docs) ? docs : []))
+      .catch(() => {});
   }, []);
 
   const standards = documents.filter((d) => d.complianceCategory === 'Standard');
@@ -87,36 +89,28 @@ const GapAnalysisPage: React.FC = () => {
   return (
     <AppLayout>
       {/* Header */}
-      <Box
-        sx={{
-          mb: 5,
-          p: 4,
-          borderRadius: 3,
-          background: 'linear-gradient(135deg, rgba(16,185,129,0.12) 0%, rgba(99,102,241,0.08) 100%)',
-          border: '1px solid rgba(16,185,129,0.2)',
-        }}
-      >
+      <Box sx={{ mb: 5, pt: 2 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 1 }}>
-          <CompareArrows sx={{ fontSize: 32, color: 'secondary.main' }} />
-          <Typography variant="h3" fontWeight={700} sx={{ letterSpacing: '-0.5px' }}>
+          <CompareArrows sx={{ fontSize: 32, color: '#0f172a' }} />
+          <Typography variant="h3" fontWeight={700} sx={{ letterSpacing: '-0.02em', color: '#0f172a' }}>
             Gap Analysis
           </Typography>
         </Box>
-        <Typography variant="body1" color="text.secondary">
+        <Typography variant="body1" sx={{ color: '#475569', fontSize: '1.1rem', maxWidth: 720 }}>
           Compare an ACME Site Procedure against a Recognised Standard to identify compliance gaps,
           partial gaps, and areas of full compliance.
         </Typography>
       </Box>
 
       {/* Configuration Card */}
-      <Card sx={{ mb: 4 }}>
-        <CardContent sx={{ p: 3 }}>
-          <Typography variant="h6" fontWeight={600} gutterBottom>
+      <Card sx={{ mb: 5, boxShadow: 'none' }}>
+        <CardContent sx={{ p: 4, backgroundColor: '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>
+          <Typography variant="h6" fontWeight={600} gutterBottom color="#0f172a">
             Select Documents to Compare
           </Typography>
           <Grid container spacing={3} alignItems="flex-end">
             <Grid item xs={12} sm={5}>
-              <FormControl fullWidth>
+              <FormControl fullWidth size="small">
                 <InputLabel id="standard-select-label">Recognised Standard</InputLabel>
                 <Select
                   labelId="standard-select-label"
@@ -124,6 +118,7 @@ const GapAnalysisPage: React.FC = () => {
                   value={standardId}
                   label="Recognised Standard"
                   onChange={(e) => setStandardId(e.target.value)}
+                  sx={{ backgroundColor: '#ffffff' }}
                 >
                   {standards.length === 0 && (
                     <MenuItem value="" disabled>
@@ -139,12 +134,12 @@ const GapAnalysisPage: React.FC = () => {
               </FormControl>
             </Grid>
 
-            <Grid item xs={12} sm={2} sx={{ textAlign: 'center' }}>
-              <CompareArrows sx={{ fontSize: 28, color: 'text.secondary' }} />
+            <Grid item xs={12} sm={2} sx={{ textAlign: 'center', pb: 1 }}>
+              <CompareArrows sx={{ fontSize: 24, color: '#94a3b8' }} />
             </Grid>
 
             <Grid item xs={12} sm={5}>
-              <FormControl fullWidth>
+              <FormControl fullWidth size="small">
                 <InputLabel id="procedure-select-label">ACME Site Procedure</InputLabel>
                 <Select
                   labelId="procedure-select-label"
@@ -152,6 +147,7 @@ const GapAnalysisPage: React.FC = () => {
                   value={procedureId}
                   label="ACME Site Procedure"
                   onChange={(e) => setProcedureId(e.target.value)}
+                  sx={{ backgroundColor: '#ffffff' }}
                 >
                   {procedures.length === 0 && (
                     <MenuItem value="" disabled>
@@ -175,6 +171,7 @@ const GapAnalysisPage: React.FC = () => {
                 onClick={handleRun}
                 disabled={!standardId || !procedureId || running}
                 size="large"
+                sx={{ mt: 2 }}
               >
                 {running ? 'Running Analysis…' : 'Run Gap Analysis'}
               </Button>
@@ -183,14 +180,14 @@ const GapAnalysisPage: React.FC = () => {
 
           {running && (
             <Box sx={{ mt: 3 }}>
-              <Typography variant="caption" color="text.secondary">
-                Claude is comparing documents… this may take 30–60 seconds.
+              <Typography variant="caption" color="#64748b">
+                Agent is comparing documents… this may take 30–60 seconds.
               </Typography>
-              <LinearProgress sx={{ mt: 0.5, borderRadius: 2 }} />
+              <LinearProgress sx={{ mt: 1, borderRadius: 2, height: 6, backgroundColor: '#e2e8f0', '& .MuiLinearProgress-bar': { backgroundColor: '#2563eb' } }} />
             </Box>
           )}
 
-          {error && <Alert severity="error" sx={{ mt: 2 }}>{error}</Alert>}
+          {error && <Alert severity="error" sx={{ mt: 3 }}>{error}</Alert>}
         </CardContent>
       </Card>
 
@@ -198,25 +195,20 @@ const GapAnalysisPage: React.FC = () => {
       {findings && (
         <>
           {/* Summary Stats */}
-          <Grid container spacing={3} sx={{ mb: 4 }}>
+          <Grid container spacing={3} sx={{ mb: 5 }}>
             {[
-              { label: 'Full Gaps', value: fullGaps, color: '#ef4444', icon: <ErrorIcon /> },
-              { label: 'Partial Gaps', value: partialGaps, color: '#f59e0b', icon: <Warning /> },
-              { label: 'Full Compliance', value: compliant, color: '#22c55e', icon: <CheckCircle /> },
-              { label: 'High Risk Items', value: highRisk, color: '#ef4444', icon: <ErrorIcon /> },
+              { label: 'Full Gaps', value: fullGaps, color: '#ef4444', bgColor: '#fef2f2', borderColor: '#fecaca' },
+              { label: 'Partial Gaps', value: partialGaps, color: '#f59e0b', bgColor: '#fffbeb', borderColor: '#fde68a' },
+              { label: 'Full Compliance', value: compliant, color: '#10b981', bgColor: '#ecfdf5', borderColor: '#a7f3d0' },
+              { label: 'High Risk Items', value: highRisk, color: '#ef4444', bgColor: '#fef2f2', borderColor: '#fecaca' },
             ].map((stat) => (
               <Grid item xs={6} sm={3} key={stat.label}>
-                <Card
-                  sx={{
-                    border: `1px solid ${stat.color}22`,
-                    background: `linear-gradient(135deg, ${stat.color}12 0%, transparent 100%)`,
-                  }}
-                >
-                  <CardContent sx={{ p: 2.5 }}>
+                <Card sx={{ border: `1px solid ${stat.borderColor}`, backgroundColor: stat.bgColor, boxShadow: 'none' }}>
+                  <CardContent sx={{ p: 3 }}>
                     <Typography variant="h3" fontWeight={700} sx={{ color: stat.color, lineHeight: 1 }}>
                       {stat.value}
                     </Typography>
-                    <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5, display: 'block' }}>
+                    <Typography variant="caption" sx={{ mt: 1, display: 'block', color: '#475569', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                       {stat.label}
                     </Typography>
                   </CardContent>
@@ -225,37 +217,37 @@ const GapAnalysisPage: React.FC = () => {
             ))}
           </Grid>
 
-          <Divider sx={{ mb: 4 }} />
-
-          {/* Detailed Findings */}
-          <Typography variant="h5" fontWeight={600} gutterBottom>
+          <Typography variant="h5" fontWeight={600} gutterBottom color="#0f172a">
             Detailed Findings ({findings.length})
           </Typography>
+          <Divider sx={{ mb: 3 }} />
 
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
             {findings.map((finding, idx) => (
               <Accordion
                 key={idx}
                 id={`finding-${idx}`}
+                disableGutters
                 sx={{
-                  background: 'rgba(17,24,39,0.8)',
-                  border: `1px solid rgba(255,255,255,0.07)`,
-                  borderRadius: '12px !important',
+                  backgroundColor: '#ffffff',
+                  border: `1px solid #e2e8f0`,
+                  borderRadius: '8px !important',
+                  boxShadow: '0 1px 2px 0 rgb(0 0 0 / 0.05)',
                   '&:before': { display: 'none' },
                   '&.Mui-expanded': {
                     borderColor:
                       finding.type === 'Full Gap'
-                        ? 'rgba(239,68,68,0.3)'
+                        ? '#fecaca'
                         : finding.type === 'Partial Gap'
-                        ? 'rgba(245,158,11,0.3)'
-                        : 'rgba(34,197,94,0.3)',
+                        ? '#fde68a'
+                        : '#a7f3d0',
                   },
                 }}
               >
-                <AccordionSummary expandIcon={<ExpandMore />} sx={{ px: 3, py: 1.5 }}>
+                <AccordionSummary expandIcon={<ExpandMore />} sx={{ px: 3, py: 2 }}>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flex: 1, flexWrap: 'wrap', mr: 2 }}>
                     {typeIcon(finding.type)}
-                    <Typography variant="subtitle2" fontWeight={600} sx={{ flex: 1 }}>
+                    <Typography variant="subtitle1" fontWeight={600} sx={{ flex: 1, color: '#1e293b' }}>
                       {finding.requirement}
                     </Typography>
                     <Box sx={{ display: 'flex', gap: 1 }}>
@@ -263,61 +255,68 @@ const GapAnalysisPage: React.FC = () => {
                         label={finding.type}
                         size="small"
                         sx={{
-                          background:
+                          backgroundColor:
                             finding.type === 'Full Gap'
-                              ? 'rgba(239,68,68,0.15)'
+                              ? '#fef2f2'
                               : finding.type === 'Partial Gap'
-                              ? 'rgba(245,158,11,0.15)'
-                              : 'rgba(34,197,94,0.15)',
+                              ? '#fffbeb'
+                              : '#ecfdf5',
                           color:
                             finding.type === 'Full Gap'
                               ? '#ef4444'
                               : finding.type === 'Partial Gap'
                               ? '#f59e0b'
-                              : '#22c55e',
-                          fontWeight: 700,
-                          fontSize: '0.68rem',
+                              : '#10b981',
+                          fontWeight: 600,
+                          fontSize: '0.7rem',
+                          border: `1px solid ${
+                            finding.type === 'Full Gap'
+                              ? '#fecaca'
+                              : finding.type === 'Partial Gap'
+                              ? '#fde68a'
+                              : '#a7f3d0'
+                          }`,
                         }}
                       />
                       <Chip
                         label={finding.severity}
                         size="small"
                         sx={{
-                          background: `${severityColor(finding.severity)}20`,
+                          backgroundColor: '#ffffff',
                           color: severityColor(finding.severity),
-                          border: `1px solid ${severityColor(finding.severity)}40`,
-                          fontWeight: 700,
-                          fontSize: '0.68rem',
+                          border: `1px solid ${severityColor(finding.severity)}`,
+                          fontWeight: 600,
+                          fontSize: '0.7rem',
                         }}
                       />
                     </Box>
                   </Box>
                 </AccordionSummary>
 
-                <AccordionDetails sx={{ px: 3, pb: 3 }}>
-                  <TableContainer component={Paper} sx={{ background: 'rgba(255,255,255,0.03)', borderRadius: 2 }}>
+                <AccordionDetails sx={{ px: 3, pb: 4, pt: 0 }}>
+                  <TableContainer component={Paper} elevation={0} sx={{ border: '1px solid #e2e8f0', borderRadius: 2 }}>
                     <Table size="small">
                       <TableBody>
                         <TableRow>
-                          <TableCell sx={{ fontWeight: 600, color: 'text.secondary', width: 180, border: 'none' }}>
+                          <TableCell sx={{ fontWeight: 600, color: '#64748b', width: 200, borderBottom: '1px solid #f1f5f9' }}>
                             Standard Citation
                           </TableCell>
-                          <TableCell sx={{ border: 'none' }}>
-                            <Typography variant="body2" sx={{ fontStyle: 'italic', color: '#818cf8' }}>
+                          <TableCell sx={{ borderBottom: '1px solid #f1f5f9' }}>
+                            <Typography variant="body2" sx={{ fontStyle: 'italic', color: '#334155' }}>
                               {finding.standardCitation}
                             </Typography>
                           </TableCell>
                         </TableRow>
                         <TableRow>
-                          <TableCell sx={{ fontWeight: 600, color: 'text.secondary', border: 'none' }}>
+                          <TableCell sx={{ fontWeight: 600, color: '#64748b', borderBottom: '1px solid #f1f5f9' }}>
                             Procedure Citation
                           </TableCell>
-                          <TableCell sx={{ border: 'none' }}>
+                          <TableCell sx={{ borderBottom: '1px solid #f1f5f9' }}>
                             <Typography
                               variant="body2"
                               sx={{
                                 fontStyle: 'italic',
-                                color: finding.procedureCitation === 'Not found' ? '#ef4444' : '#34d399',
+                                color: finding.procedureCitation === 'Not found' ? '#ef4444' : '#0f172a',
                               }}
                             >
                               {finding.procedureCitation}
@@ -325,11 +324,11 @@ const GapAnalysisPage: React.FC = () => {
                           </TableCell>
                         </TableRow>
                         <TableRow>
-                          <TableCell sx={{ fontWeight: 600, color: 'text.secondary', border: 'none', verticalAlign: 'top' }}>
+                          <TableCell sx={{ fontWeight: 600, color: '#64748b', border: 'none', verticalAlign: 'top' }}>
                             Recommendation
                           </TableCell>
                           <TableCell sx={{ border: 'none' }}>
-                            <Typography variant="body2">{finding.recommendation}</Typography>
+                            <Typography variant="body2" sx={{ color: '#0f172a' }}>{finding.recommendation}</Typography>
                           </TableCell>
                         </TableRow>
                       </TableBody>

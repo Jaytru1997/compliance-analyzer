@@ -7,16 +7,18 @@ import {
   Box,
   Chip,
   Tooltip,
+  IconButton,
 } from '@mui/material';
-import { PictureAsPdf, Article, CalendarToday } from '@mui/icons-material';
+import { PictureAsPdf, Article, CalendarToday, DeleteOutline } from '@mui/icons-material';
 import { DocumentMetadata } from '@compliance-analyzer/shared';
 import { useNavigate } from 'react-router-dom';
 
 interface Props {
   doc: DocumentMetadata;
+  onDelete?: (id: string) => void;
 }
 
-const DocumentCard: React.FC<Props> = ({ doc }) => {
+const DocumentCard: React.FC<Props> = ({ doc, onDelete }) => {
   const navigate = useNavigate();
   const isPdf = doc.mimeType === 'application/pdf';
 
@@ -26,11 +28,11 @@ const DocumentCard: React.FC<Props> = ({ doc }) => {
   return (
     <Card
       sx={{
-        transition: 'all 0.25s ease',
+        transition: 'all 0.2s ease',
         '&:hover': {
-          transform: 'translateY(-4px)',
-          boxShadow: '0 16px 48px rgba(0,0,0,0.5)',
-          borderColor: 'rgba(99,102,241,0.4)',
+          transform: 'translateY(-2px)',
+          boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)',
+          borderColor: '#94a3b8',
         },
       }}
     >
@@ -47,16 +49,14 @@ const DocumentCard: React.FC<Props> = ({ doc }) => {
                 height: 44,
                 borderRadius: 2,
                 flexShrink: 0,
-                background: isPdf
-                  ? 'linear-gradient(135deg, rgba(239,68,68,0.2), rgba(239,68,68,0.08))'
-                  : 'linear-gradient(135deg, rgba(99,102,241,0.2), rgba(99,102,241,0.08))',
-                border: `1px solid ${isPdf ? 'rgba(239,68,68,0.2)' : 'rgba(99,102,241,0.2)'}`,
+                backgroundColor: isPdf ? '#fef2f2' : '#eff6ff',
+                border: `1px solid ${isPdf ? '#fecaca' : '#bfdbfe'}`,
               }}
             >
               {isPdf ? (
                 <PictureAsPdf sx={{ color: '#ef4444', fontSize: 22 }} />
               ) : (
-                <Article sx={{ color: '#6366f1', fontSize: 22 }} />
+                <Article sx={{ color: '#2563eb', fontSize: 22 }} />
               )}
             </Box>
 
@@ -65,6 +65,7 @@ const DocumentCard: React.FC<Props> = ({ doc }) => {
                 <Typography
                   variant="subtitle1"
                   fontWeight={600}
+                  color="#0f172a"
                   sx={{
                     overflow: 'hidden',
                     textOverflow: 'ellipsis',
@@ -80,17 +81,9 @@ const DocumentCard: React.FC<Props> = ({ doc }) => {
                   label={doc.complianceCategory}
                   size="small"
                   sx={{
-                    background:
-                      doc.complianceCategory === 'Standard'
-                        ? 'rgba(16,185,129,0.15)'
-                        : 'rgba(99,102,241,0.15)',
-                    color:
-                      doc.complianceCategory === 'Standard' ? '#34d399' : '#818cf8',
-                    border: `1px solid ${
-                      doc.complianceCategory === 'Standard'
-                        ? 'rgba(16,185,129,0.3)'
-                        : 'rgba(99,102,241,0.3)'
-                    }`,
+                    backgroundColor: doc.complianceCategory === 'Standard' ? '#ecfdf5' : '#e0e7ff',
+                    color: doc.complianceCategory === 'Standard' ? '#059669' : '#4338ca',
+                    border: `1px solid ${doc.complianceCategory === 'Standard' ? '#a7f3d0' : '#c7d2fe'}`,
                     fontWeight: 600,
                     fontSize: '0.68rem',
                     height: 20,
@@ -98,13 +91,29 @@ const DocumentCard: React.FC<Props> = ({ doc }) => {
                 />
               </Box>
             </Box>
+
+            {onDelete && (
+              <IconButton
+                size="small"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onDelete(doc.id);
+                }}
+                sx={{
+                  color: '#94a3b8',
+                  '&:hover': { color: '#ef4444', backgroundColor: '#fef2f2' },
+                }}
+              >
+                <DeleteOutline fontSize="small" />
+              </IconButton>
+            )}
           </Box>
 
           {/* Summary */}
           {doc.summary && (
             <Typography
               variant="body2"
-              color="text.secondary"
+              color="#475569"
               sx={{
                 mb: 2,
                 display: '-webkit-box',
@@ -127,11 +136,11 @@ const DocumentCard: React.FC<Props> = ({ doc }) => {
                   label={t}
                   size="small"
                   sx={{
-                    background: 'rgba(255,255,255,0.05)',
-                    border: '1px solid rgba(255,255,255,0.08)',
+                    backgroundColor: '#f1f5f9',
+                    border: '1px solid #e2e8f0',
                     fontSize: '0.65rem',
                     height: 18,
-                    color: 'text.secondary',
+                    color: '#64748b',
                   }}
                 />
               ))}
@@ -139,7 +148,7 @@ const DocumentCard: React.FC<Props> = ({ doc }) => {
                 <Chip
                   label={`+${doc.topics.length - 4}`}
                   size="small"
-                  sx={{ fontSize: '0.65rem', height: 18, opacity: 0.5 }}
+                  sx={{ fontSize: '0.65rem', height: 18, backgroundColor: '#f1f5f9', color: '#94a3b8', border: '1px solid transparent' }}
                 />
               )}
             </Box>
@@ -147,11 +156,11 @@ const DocumentCard: React.FC<Props> = ({ doc }) => {
 
           {/* Footer */}
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-            <CalendarToday sx={{ fontSize: 12, color: 'text.secondary' }} />
-            <Typography variant="caption" color="text.secondary">
+            <CalendarToday sx={{ fontSize: 12, color: '#94a3b8' }} />
+            <Typography variant="caption" color="#64748b">
               {formatDate(doc.uploadDate)}
             </Typography>
-            <Typography variant="caption" color="text.secondary" sx={{ ml: 'auto' }}>
+            <Typography variant="caption" color="#64748b" sx={{ ml: 'auto' }}>
               {(doc.size / 1024).toFixed(1)} KB
             </Typography>
           </Box>

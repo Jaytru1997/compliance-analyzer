@@ -9,10 +9,14 @@ This project demonstrates a comprehensive set of skills tailored to building pro
 - **Material-UI (MUI) v6:** Implementing enterprise-grade, accessible, and responsive user interfaces.
 - **Node.js & Express:** Robust backend API architecture with proper middleware, error handling, and routing.
 
-## 2. AI & RAG Architecture
+## 2. Advanced AI & Hybrid RAG Architecture
 
-- **Retrieval-Augmented Generation (RAG):** Designing and implementing an in-memory vector store with chunking strategies optimized for compliance documents.
-- **Anthropic Claude Integration:** Utilizing Claude 3.5 Sonnet (`claude-3-5-sonnet`) for complex reasoning and gap analysis.
+- **Multi-Stage Retrieval Pipeline:** Implemented an industry best-in-class pipeline matching systems like Elasticsearch and Azure AI Search.
+- **Local Machine Learning:** Deployed `all-MiniLM-L6-v2` locally via Transformers.js (ONNX Runtime) for zero-latency, zero-cost dense embeddings.
+- **Okapi BM25 Keyword Search:** Built a custom BM25 index with token stemming, stopword removal, and TF-IDF scoring.
+- **Reciprocal Rank Fusion (RRF):** Merging vector similarity and BM25 scores into a unified ranking system.
+- **Cross-Encoder Reranking:** Leveraging Claude to rerank final candidates based on complex semantic relevance.
+- **Anthropic Claude Integration:** Utilizing Claude (`claude-sonnet-4-6`) for complex reasoning and gap analysis.
 - **Advanced Chunking:** Implementing hybrid chunking (semantic + fixed-size with overlap) to maintain document context.
 - **Metadata Enrichment:** Tagging chunks with hierarchical metadata (documentId, section, subsection, complianceCategory) to improve retrieval accuracy.
 
@@ -24,6 +28,7 @@ This project demonstrates a comprehensive set of skills tailored to building pro
 
 ## 4. Prompt Engineering
 
+- **Query Expansion:** Instructing the LLM to generate domain-specific synonyms and acronym expansions to boost BM25 recall.
 - **System Guardrails:** Crafting role-based prompts ("Senior mining safety compliance auditor") to enforce tone, structure, and factual accuracy.
 - **Structured Output:** Designing prompts that enforce JSON/XML outputs for seamless frontend parsing and rendering.
 

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import {
   Box,
   Typography,
@@ -43,6 +43,7 @@ const DocumentDetailPage: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [querying, setQuerying] = useState(false);
+  const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!id) return;
@@ -51,6 +52,13 @@ const DocumentDetailPage: React.FC = () => {
       .catch(() => setDoc(null))
       .finally(() => setLoading(false));
   }, [id]);
+
+  useEffect(() => {
+    // Auto-scroll to bottom on new messages
+    if (scrollRef.current) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    }
+  }, [messages, querying]);
 
   const handleSend = async () => {
     const q = input.trim();
@@ -112,8 +120,8 @@ const DocumentDetailPage: React.FC = () => {
   if (loading) {
     return (
       <AppLayout>
-        <Skeleton variant="rounded" height={200} sx={{ mb: 3, borderRadius: 3 }} />
-        <Skeleton variant="rounded" height={400} sx={{ borderRadius: 3 }} />
+        <Skeleton variant="rounded" height={200} sx={{ mb: 3, borderRadius: 2 }} />
+        <Skeleton variant="rounded" height={400} sx={{ borderRadius: 2 }} />
       </AppLayout>
     );
   }
@@ -132,7 +140,8 @@ const DocumentDetailPage: React.FC = () => {
       <Button
         startIcon={<ArrowBack />}
         onClick={() => navigate('/dashboard')}
-        sx={{ mb: 3, color: 'text.secondary' }}
+        sx={{ mb: 3, color: '#64748b', '&:hover': { backgroundColor: 'transparent', color: '#0f172a' } }}
+        disableRipple
       >
         Back to Dashboard
       </Button>
@@ -140,33 +149,32 @@ const DocumentDetailPage: React.FC = () => {
       <Grid container spacing={4}>
         {/* Left: Document Info */}
         <Grid item xs={12} lg={4}>
-          <Card sx={{ mb: 3 }}>
-            <CardContent sx={{ p: 3 }}>
+          <Card sx={{ mb: 3, boxShadow: 'none' }}>
+            <CardContent sx={{ p: 4 }}>
               <Box sx={{ display: 'flex', gap: 1.5, alignItems: 'center', mb: 2 }}>
                 <Chip
                   label={doc.complianceCategory}
                   size="small"
                   sx={{
-                    background: doc.complianceCategory === 'Standard'
-                      ? 'rgba(16,185,129,0.15)' : 'rgba(99,102,241,0.15)',
-                    color: doc.complianceCategory === 'Standard' ? '#34d399' : '#818cf8',
-                    border: `1px solid ${doc.complianceCategory === 'Standard' ? 'rgba(16,185,129,0.3)' : 'rgba(99,102,241,0.3)'}`,
-                    fontWeight: 700,
+                    backgroundColor: doc.complianceCategory === 'Standard' ? '#ecfdf5' : '#e0e7ff',
+                    color: doc.complianceCategory === 'Standard' ? '#059669' : '#4338ca',
+                    border: `1px solid ${doc.complianceCategory === 'Standard' ? '#a7f3d0' : '#c7d2fe'}`,
+                    fontWeight: 600,
                   }}
                 />
               </Box>
-              <Typography variant="h5" fontWeight={700} gutterBottom sx={{ lineHeight: 1.3 }}>
+              <Typography variant="h5" fontWeight={700} gutterBottom sx={{ lineHeight: 1.3, color: '#0f172a' }}>
                 {doc.originalName}
               </Typography>
-              <Typography variant="caption" color="text.secondary">
+              <Typography variant="caption" color="#64748b">
                 Uploaded {new Date(doc.uploadDate).toLocaleDateString()}
               </Typography>
 
-              <Divider sx={{ my: 2.5 }} />
+              <Divider sx={{ my: 3 }} />
 
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1.5 }}>
-                <Topic sx={{ fontSize: 18, color: 'primary.main' }} />
-                <Typography variant="subtitle2" fontWeight={600}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
+                <Topic sx={{ fontSize: 18, color: '#64748b' }} />
+                <Typography variant="subtitle2" fontWeight={600} color="#334155">
                   Key Topics
                 </Typography>
               </Box>
@@ -177,9 +185,10 @@ const DocumentDetailPage: React.FC = () => {
                     label={t}
                     size="small"
                     sx={{
-                      background: 'rgba(255,255,255,0.06)',
-                      border: '1px solid rgba(255,255,255,0.1)',
-                      fontSize: '0.7rem',
+                      backgroundColor: '#f8fafc',
+                      border: '1px solid #e2e8f0',
+                      fontSize: '0.75rem',
+                      color: '#475569',
                     }}
                   />
                 ))}
@@ -187,15 +196,15 @@ const DocumentDetailPage: React.FC = () => {
             </CardContent>
           </Card>
 
-          <Card>
-            <CardContent sx={{ p: 3 }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1.5 }}>
-                <FormatQuote sx={{ fontSize: 18, color: 'secondary.main' }} />
-                <Typography variant="subtitle2" fontWeight={600}>
+          <Card sx={{ boxShadow: 'none' }}>
+            <CardContent sx={{ p: 4 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
+                <FormatQuote sx={{ fontSize: 18, color: '#64748b' }} />
+                <Typography variant="subtitle2" fontWeight={600} color="#334155">
                   AI Summary
                 </Typography>
               </Box>
-              <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.7 }}>
+              <Typography variant="body2" sx={{ lineHeight: 1.7, color: '#475569' }}>
                 {doc.summary || 'No summary available.'}
               </Typography>
             </CardContent>
@@ -204,15 +213,15 @@ const DocumentDetailPage: React.FC = () => {
 
         {/* Right: Chat */}
         <Grid item xs={12} lg={8}>
-          <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-            <CardContent sx={{ p: 3, borderBottom: '1px solid rgba(255,255,255,0.07)' }}>
+          <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column', boxShadow: 'none' }}>
+            <CardContent sx={{ p: 3, borderBottom: '1px solid #e2e8f0', backgroundColor: '#f8fafc' }}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                <SmartToy sx={{ color: 'primary.main' }} />
+                <SmartToy sx={{ color: '#2563eb' }} />
                 <Box>
-                  <Typography variant="subtitle1" fontWeight={600}>
-                    Document Q&A
+                  <Typography variant="subtitle1" fontWeight={600} color="#0f172a">
+                    Document Analysis Q&A
                   </Typography>
-                  <Typography variant="caption" color="text.secondary">
+                  <Typography variant="caption" color="#64748b">
                     Ask questions — responses are grounded in document content with citations
                   </Typography>
                 </Box>
@@ -221,16 +230,18 @@ const DocumentDetailPage: React.FC = () => {
 
             {/* Messages */}
             <Box
+              ref={scrollRef}
               id="chat-messages-area"
               sx={{
                 flex: 1,
                 overflowY: 'auto',
-                p: 3,
+                p: 4,
                 display: 'flex',
                 flexDirection: 'column',
-                gap: 2,
-                minHeight: 320,
-                maxHeight: 480,
+                gap: 3,
+                minHeight: 400,
+                maxHeight: 600,
+                backgroundColor: '#ffffff',
               }}
             >
               {messages.length === 0 && (
@@ -241,12 +252,13 @@ const DocumentDetailPage: React.FC = () => {
                     flexDirection: 'column',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    opacity: 0.5,
-                    gap: 1,
+                    gap: 2,
                   }}
                 >
-                  <SmartToy sx={{ fontSize: 48 }} />
-                  <Typography variant="body2" color="text.secondary">
+                  <Box sx={{ p: 2, borderRadius: '50%', backgroundColor: '#f1f5f9' }}>
+                    <SmartToy sx={{ fontSize: 32, color: '#94a3b8' }} />
+                  </Box>
+                  <Typography variant="body2" color="#64748b">
                     Ask anything about this document…
                   </Typography>
                 </Box>
@@ -257,51 +269,49 @@ const DocumentDetailPage: React.FC = () => {
                   key={i}
                   sx={{
                     display: 'flex',
-                    gap: 1.5,
+                    gap: 2,
                     alignItems: 'flex-start',
                     flexDirection: m.role === 'user' ? 'row-reverse' : 'row',
                   }}
                 >
                   <Avatar
                     sx={{
-                      width: 32,
-                      height: 32,
-                      bgcolor: m.role === 'user' ? 'primary.dark' : 'secondary.dark',
-                      fontSize: '0.75rem',
+                      width: 36,
+                      height: 36,
+                      bgcolor: m.role === 'user' ? '#0f172a' : '#eff6ff',
+                      color: m.role === 'user' ? '#ffffff' : '#2563eb',
                     }}
                   >
                     {m.role === 'user' ? <Person sx={{ fontSize: 18 }} /> : <SmartToy sx={{ fontSize: 18 }} />}
                   </Avatar>
-                  <Box sx={{ maxWidth: '80%' }}>
+                  <Box sx={{ maxWidth: '75%' }}>
                     <Paper
+                      elevation={0}
                       sx={{
-                        p: 2,
-                        borderRadius: 2.5,
-                        background:
-                          m.role === 'user'
-                            ? 'linear-gradient(135deg, rgba(99,102,241,0.3), rgba(99,102,241,0.15))'
-                            : 'rgba(255,255,255,0.05)',
-                        border: '1px solid rgba(255,255,255,0.07)',
+                        p: 2.5,
+                        borderRadius: 3,
+                        backgroundColor: m.role === 'user' ? '#f1f5f9' : '#ffffff',
+                        border: m.role === 'user' ? 'none' : '1px solid #e2e8f0',
                       }}
                     >
-                      <Typography variant="body2" sx={{ lineHeight: 1.65, whiteSpace: 'pre-wrap' }}>
+                      <Typography variant="body2" sx={{ lineHeight: 1.65, whiteSpace: 'pre-wrap', color: '#1e293b' }}>
                         {m.content}
                       </Typography>
                     </Paper>
 
                     {m.sources && m.sources.length > 0 && (
-                      <Box sx={{ mt: 1, display: 'flex', gap: 0.75, flexWrap: 'wrap' }}>
+                      <Box sx={{ mt: 1.5, display: 'flex', gap: 1, flexWrap: 'wrap' }}>
                         {m.sources.map((s, si) => (
                           <Chip
                             key={si}
                             label={`§ ${s.section} (p.${s.pageNumber})`}
                             size="small"
                             sx={{
-                              fontSize: '0.65rem',
-                              height: 20,
-                              background: 'rgba(16,185,129,0.1)',
-                              border: '1px solid rgba(16,185,129,0.2)',
-                              color: '#34d399',
+                              fontSize: '0.7rem',
+                              height: 22,
+                              backgroundColor: '#f8fafc',
+                              border: '1px solid #e2e8f0',
+                              color: '#64748b',
                             }}
                           />
                         ))}
@@ -312,12 +322,12 @@ const DocumentDetailPage: React.FC = () => {
               ))}
 
               {querying && (
-                <Box sx={{ display: 'flex', gap: 1.5, alignItems: 'center' }}>
-                  <Avatar sx={{ width: 32, height: 32, bgcolor: 'secondary.dark' }}>
+                <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+                  <Avatar sx={{ width: 36, height: 36, bgcolor: '#eff6ff', color: '#2563eb' }}>
                     <SmartToy sx={{ fontSize: 18 }} />
                   </Avatar>
-                  <CircularProgress size={20} />
-                  <Typography variant="caption" color="text.secondary">
+                  <CircularProgress size={20} sx={{ color: '#cbd5e1' }} />
+                  <Typography variant="caption" color="#94a3b8">
                     Analyzing document…
                   </Typography>
                 </Box>
@@ -327,10 +337,11 @@ const DocumentDetailPage: React.FC = () => {
             {/* Input */}
             <Box
               sx={{
-                p: 2,
-                borderTop: '1px solid rgba(255,255,255,0.07)',
+                p: 3,
+                borderTop: '1px solid #e2e8f0',
+                backgroundColor: '#ffffff',
                 display: 'flex',
-                gap: 1.5,
+                gap: 2,
               }}
             >
               <TextField
@@ -342,21 +353,30 @@ const DocumentDetailPage: React.FC = () => {
                 onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend(); }}}
                 size="small"
                 multiline
-                maxRows={3}
-              />
-              <IconButton
-                id="chat-send-btn"
-                onClick={handleSend}
-                disabled={!input.trim() || querying}
+                maxRows={4}
                 sx={{
-                  background: 'linear-gradient(135deg, #6366f1, #818cf8)',
-                  color: '#fff',
-                  '&:hover': { background: 'linear-gradient(135deg, #4f46e5, #6366f1)' },
-                  '&:disabled': { background: 'rgba(255,255,255,0.08)', color: 'text.secondary' },
+                  '& .MuiOutlinedInput-root': {
+                    backgroundColor: '#f8fafc',
+                  }
                 }}
-              >
-                <Send sx={{ fontSize: 20 }} />
-              </IconButton>
+              />
+              <Box sx={{ display: 'flex', alignItems: 'flex-end' }}>
+                <IconButton
+                  id="chat-send-btn"
+                  onClick={handleSend}
+                  disabled={!input.trim() || querying}
+                  sx={{
+                    backgroundColor: '#0f172a',
+                    color: '#ffffff',
+                    borderRadius: 2,
+                    p: 1.25,
+                    '&:hover': { backgroundColor: '#1e293b' },
+                    '&:disabled': { backgroundColor: '#e2e8f0', color: '#94a3b8' },
+                  }}
+                >
+                  <Send sx={{ fontSize: 20 }} />
+                </IconButton>
+              </Box>
             </Box>
           </Card>
         </Grid>
