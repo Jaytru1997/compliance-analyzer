@@ -2,6 +2,7 @@
   "name": "compliance-analyzer",
   "version": "1.0.0",
   "private": true,
+  "packageManager": "npm@10.0.0",
   "workspaces": [
     "apps/*",
     "packages/*"
@@ -10,7 +11,10 @@
     "build": "turbo run build",
     "dev": "turbo run dev",
     "lint": "turbo run lint",
-    "test": "turbo run test"
+    "test": "turbo run test",
+    "test:backend": "npm test --workspace=backend",
+    "test:frontend": "npm test --workspace=frontend",
+    "test:all": "npm run test:backend && npm run test:frontend"
   },
   "devDependencies": {
     "turbo": "^2.0.0"

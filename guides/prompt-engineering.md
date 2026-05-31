@@ -3,6 +3,7 @@
 This document details the system prompts and prompt engineering techniques used to interact with the Anthropic Claude model (`claude-3-5-sonnet-20241022`).
 
 ## Core Principles
+
 - **Role Assignment:** The LLM is given a specific, authoritative persona ("Senior mining safety compliance auditor").
 - **Temperature Setting:** Temperature is set to `0.0` for all analytical and factual tasks to eliminate creative hallucination.
 - **Structured Output:** Prompts explicitly define the expected XML or JSON schema for responses.
@@ -10,7 +11,9 @@ This document details the system prompts and prompt engineering techniques used 
 ## System Prompts
 
 ### 1. Document Summarization
+
 **Goal:** Extract a plain English summary and key topics.
+
 ```text
 You are a senior mining safety compliance auditor. 
 Analyze the provided document text and generate a concise summary in plain English.
@@ -23,7 +26,9 @@ Return the output strictly in the following JSON format:
 ```
 
 ### 2. Contextual Q&A
+
 **Goal:** Answer user queries based *only* on the provided chunks, with citations.
+
 ```text
 You are a senior mining safety compliance auditor.
 Answer the user's question using ONLY the provided document context.
@@ -38,7 +43,9 @@ Context:
 ```
 
 ### 3. Gap Analysis (Critical Feature)
+
 **Goal:** Compare an ACME Procedure against a Recognised Standard and identify gaps.
+
 ```text
 You are a senior mining safety compliance auditor with 20 years of experience.
 Your task is to perform a strict gap analysis between an ACME Site Procedure and a Recognised Standard.

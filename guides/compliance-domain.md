@@ -10,9 +10,10 @@ Understanding the mining safety compliance domain is critical to the success of 
 
 ## Gap Analysis Logic
 
-The core value proposition of this application is automating the Gap Analysis between **Site Procedures** and **Recognised Standards**. 
+The core value proposition of this application is automating the Gap Analysis between **Site Procedures** and **Recognised Standards**.
 
 A human auditor looks for three things:
+
 1. **Does the procedure explicitly cover the requirement?** (Full Compliance)
 2. **Does the procedure touch upon the topic, but miss key specifics?** (e.g., The standard requires inspecting harnesses every 6 months; the procedure just says "inspect harnesses regularly".) (Partial Gap)
 3. **Is the requirement completely ignored?** (Full Gap)
@@ -20,6 +21,7 @@ A human auditor looks for three things:
 The AI prompts and chunk metadata are specifically engineered to mimic this workflow. The RAG system retrieves the standard's requirement and then searches the procedure for corresponding chunks. If the concepts do not map 1:1, a gap is flagged with a severity rating.
 
 ## Severity Ratings
+
 - **High:** Immediate risk to life or severe legal non-compliance. (e.g., Missing lockout/tagout procedures).
 - **Medium:** Operational risk or partial non-compliance. (e.g., Training frequency not specified).
 - **Low:** Administrative discrepancy. (e.g., Form number referenced is outdated).

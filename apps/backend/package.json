@@ -5,7 +5,10 @@
   "scripts": {
     "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
     "build": "tsc",
-    "start": "node dist/index.js"
+    "start": "node dist/index.js",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.24.0",
@@ -29,7 +32,9 @@
     "@types/node": "^20.14.9",
     "@types/pdf-parse": "^1.1.4",
     "@types/uuid": "^10.0.0",
+    "@vitest/coverage-v8": "^4.1.7",
     "ts-node-dev": "^2.0.0",
-    "typescript": "^5.5.3"
+    "typescript": "^5.5.3",
+    "vitest": "^4.1.7"
   }
 }
