@@ -1,0 +1,94 @@
+ACME MINING CO.
+SITE SAFETY PROCEDURES MANUAL
+
+Document Number: ACME-SSP-001
+Revision: 3
+Date: January 2025
+Classification: Controlled Document
+
+---
+
+1. INTRODUCTION AND SCOPE
+
+This procedure applies to all ACME Mining Co. personnel, contractors, and visitors operating at the ACME Open Cut Mine. It establishes the minimum safety requirements for all site activities.
+
+1.1 Purpose
+To ensure the health, safety, and welfare of all persons at the ACME Mine site in accordance with legislative requirements.
+
+1.2 Definitions
+- PPE: Personal Protective Equipment
+- JSEA: Job Safety and Environment Analysis
+- SWP: Safe Work Procedure
+- Competent Person: A person who has acquired through training, qualification or experience the knowledge and skills to perform a task.
+
+---
+
+2. PERSONAL PROTECTIVE EQUIPMENT (PPE)
+
+2.1 Mandatory PPE for All Personnel
+All personnel on site must wear the following minimum PPE at all times when outside of enclosed structures:
+- Hard hat (AS/NZS 1801 compliant)
+- Safety boots with steel cap and penetration-resistant sole
+- High-visibility vest or shirt (Class D/N)
+- Safety glasses
+
+2.2 Task-Specific PPE
+Additional PPE may be required for specific tasks. Supervisors must identify task-specific PPE in the JSEA.
+
+2.3 PPE Inspection
+Personnel are responsible for inspecting their own PPE regularly. Damaged or defective PPE must be removed from service and reported to a supervisor.
+
+---
+
+3. WORKING AT HEIGHTS
+
+3.1 Scope
+This section applies to all work performed at a height greater than 2 metres where there is risk of fall.
+
+3.2 Fall Prevention
+Fall prevention systems (guardrails, scaffolding) are preferred over fall arrest systems. A JSEA must be completed before commencing any work at heights.
+
+3.3 Harness Inspections
+Safety harnesses must be inspected before each use by the user. Harnesses showing signs of wear or damage must not be used.
+
+3.4 Rescue Plan
+A rescue plan must be in place before work at heights begins. The plan must be reviewed with all personnel involved.
+
+---
+
+4. EXCAVATION AND TRENCHING
+
+4.1 Permit Requirements
+All excavations must be authorised by an Excavation Permit before work commences. The permit must identify underground services and exclusion zones.
+
+4.2 Battering and Shoring
+Excavations deeper than 1.5m must be battered to a safe angle or shored to prevent collapse. A competent person must assess the soil conditions.
+
+4.3 Barricading
+All excavations must be barricaded when unattended. Barricades must be a minimum of 1 metre from the edge of the excavation.
+
+---
+
+5. VEHICLE AND MOBILE PLANT INTERACTION
+
+5.1 Exclusion Zones
+Pedestrians must not enter active mobile plant operating areas without a positive communication with the operator.
+
+5.2 Speed Limits
+The maximum speed limit on haul roads is 50 km/h. Speed limits in workshop areas are 10 km/h. Speed limits must be observed at all times.
+
+5.3 Pre-start Checks
+All vehicles and mobile plant must undergo a documented pre-start check before operation each shift.
+
+---
+
+6. EMERGENCY PROCEDURES
+
+6.1 Emergency Contact
+In the event of an emergency, contact the Site Emergency Coordinator on radio Channel 9.
+
+6.2 Muster Points
+All personnel must be familiar with designated muster points. Muster points are shown on the site map posted at site entrances.
+
+6.3 Incident Reporting
+All incidents, near misses, and hazards must be reported immediately to the supervising officer using Form ACME-IR-001.

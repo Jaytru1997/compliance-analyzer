@@ -1,0 +1,122 @@
+RECOGNISED STANDARD: MINE SAFETY MANAGEMENT
+Code of Practice: Safe Work in Open Cut Mines
+
+Issuing Authority: Department of Resources and Energy
+Document ID: RS-OSHEM-001
+Version: 5.1
+Effective Date: March 2024
+
+---
+
+1. SCOPE AND OBLIGATIONS
+
+This recognised standard applies to all persons conducting mining operations at open cut mine sites. Operators must comply with all requirements herein or adopt an alternative practice that provides an equivalent or higher level of safety.
+
+1.1 Legislative Basis
+This standard is issued under Section 68 of the Mining and Quarrying Safety and Health Act. Non-compliance may result in enforcement action, including site stop-work orders.
+
+---
+
+2. PERSONAL PROTECTIVE EQUIPMENT
+
+2.1 Selection and Use
+Operators must implement a formal PPE Program that includes:
+a) A documented PPE hazard assessment for all tasks.
+b) Selection of PPE that complies with the applicable Australian Standard.
+c) Provision of PPE to workers at no cost.
+d) A documented procedure for PPE inspection, maintenance, and replacement.
+
+2.2 PPE Inspection Schedule
+All life-safety PPE (e.g., harnesses, fall arrest lanyards) must be formally inspected by a Competent Person no less frequently than every six (6) months. Records of all formal inspections must be maintained for a minimum of 5 years.
+
+2.3 Training
+All workers must receive documented training on the correct use, limitation, fitting, and care of all PPE they are required to use prior to first use.
+
+---
+
+3. WORKING AT HEIGHTS
+
+3.1 Risk Management
+A documented Work at Heights Risk Assessment must be completed for every task at height. The hierarchy of controls must be documented and applied:
+(a) Elimination — remove the need to work at height.
+(b) Substitution — use alternative equipment.
+(c) Engineering controls — guardrails, scaffolding.
+(d) Administrative controls — permits, procedures, supervision.
+(e) PPE — safety harnesses as a last resort.
+
+3.2 Competency Requirements
+All persons performing or supervising work at heights must hold a current industry-recognised Working at Heights competency (e.g., RIIWHS204E) prior to undertaking the work.
+
+3.3 Harness Inspection Requirements
+Safety harnesses and fall arrest systems must be:
+(a) Inspected by the user immediately before each use.
+(b) Formally inspected by a Competent Person every six (6) months.
+(c) Retired in accordance with the manufacturer's specifications (commonly 10 years from manufacture, or sooner if damaged).
+
+3.4 Rescue Plans
+A documented rescue plan must be prepared, reviewed, and practised prior to commencing work at heights. The plan must be readily accessible at the work site and include specific roles and responsibilities for rescue personnel.
+
+---
+
+4. EXCAVATION AND TRENCHING
+
+4.1 Permits and Planning
+A formal Excavation Permit system must be in place. Prior to issuing any permit:
+a) Underground service detection must be performed and documented.
+b) Exclusion zones around live services must be marked and communicated.
+c) An excavation risk assessment must be prepared by a Competent Person.
+d) The ground conditions, water table, and adjacent structures must be assessed.
+
+4.2 Shoring and Battering
+All excavations must be protected by one or a combination of the following:
+a) Battered/sloped to a stable angle determined by a geotechnical assessment.
+b) Shored with an engineered shoring system.
+c) Shielded using a trench shield rated for the loads involved.
+
+Excavations exceeding 1.5m depth are considered confined spaces and require a Confined Space Entry Permit.
+
+4.3 Inspection of Excavations
+Excavations must be inspected by a Competent Person at least daily, and after any significant rainfall or seismic event. Inspection records must be kept.
+
+4.4 Barricading
+All open excavations must be barricaded with rigid barriers a minimum of 1 metre from the edge. Warning signs must be posted. Barricades must be maintained in a serviceable condition at all times.
+
+---
+
+5. VEHICLE AND MOBILE PLANT
+
+5.1 Traffic Management Plan
+A documented Traffic Management Plan (TMP) must be developed and maintained for all active mine areas. The TMP must address:
+a) Segregation of pedestrians and mobile plant.
+b) Intersection control procedures.
+c) Visitor management and site inductions.
+d) Emergency vehicle access routes.
+
+5.2 Speed Management
+Speed limits must be established based on a risk assessment considering road conditions, visibility, and traffic density. Speed limits must be communicated via signage and enforced via a documented speed management program, which must include periodic speed audits.
+
+5.3 Pre-operational Checks
+A documented pre-operational inspection must be performed and recorded for all mobile plant prior to each shift's operation. Defects must be reported via a formal defect management process and the plant must not be operated until cleared.
+
+5.4 Operator Competency
+All mobile plant operators must hold a current, site-specific competency assessment for each class of plant they operate.
+
+---
+
+6. EMERGENCY PREPAREDNESS
+
+6.1 Emergency Response Plan
+A documented Emergency Response Plan (ERP) must be developed, maintained, and tested at least annually with a full simulation exercise. The ERP must include:
+a) Identification of all foreseeable emergencies.
+b) Roles, responsibilities, and communication chains.
+c) Emergency contact details for all external agencies.
+d) Procedures for mine evacuation and personnel accountability.
+
+6.2 Emergency Communication
+A dedicated, priority emergency communication channel must be established and reserved exclusively for emergency communications. All personnel must be trained in its use.
+
+6.3 Incident Reporting and Investigation
+All incidents, near misses, and hazards must be reported immediately. A formal investigation process must be applied to all significant incidents, with root cause analysis and corrective actions documented within 28 days of the incident.
+
+6.4 Training and Drills
+Emergency response training must be provided to all personnel annually. Records of all training and drills must be maintained.
