@@ -33,6 +33,7 @@ export class DocumentService {
       complianceCategory: category,
       summary,
       topics,
+      fullText: text,
     });
 
     // Use the MongoDB ObjectId as our documentId for chunk metadata
@@ -84,10 +85,10 @@ export class DocumentService {
     try {
       // 1. Delete all chunks associated with this document
       await ragService.deleteChunksForDocument(id);
-      
+
       // 2. Delete the document metadata
       const result = await DocumentModel.findByIdAndDelete(id);
-      
+
       return !!result;
     } catch (error) {
       console.error(`[DocumentService] Error deleting document ${id}:`, error);

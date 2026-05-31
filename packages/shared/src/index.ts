@@ -7,6 +7,7 @@ export interface DocumentMetadata {
   complianceCategory?: 'Standard' | 'Procedure';
   summary?: string;
   topics?: string[];
+  fullText?: string;
 }
 
 export interface ChunkMetadata {
@@ -43,4 +44,10 @@ export interface ChatMessage {
   role: 'user' | 'assistant';
   content: string;
   citations?: string[];
+}
+
+export interface DocumentContent {
+  id: string;
+  originalName: string;
+  fullText: string;
 }

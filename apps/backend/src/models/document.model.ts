@@ -20,6 +20,7 @@ const DocumentSchema = new Schema<IDocumentModel>(
     },
     summary: { type: String, default: '' },
     topics: { type: [String], default: [] },
+    fullText: { type: String, default: '' },
   },
   {
     // Use Mongoose's _id (ObjectId) as `id` via toJSON transform

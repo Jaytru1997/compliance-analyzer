@@ -43,6 +43,21 @@ router.get('/:id', async (req, res) => {
   }
 });
 
+router.get('/:id/content', async (req, res) => {
+  try {
+    const doc = await documentService.getDocumentById(req.params.id);
+    if (doc && doc.fullText) {
+      res.json({ id: doc.id, originalName: doc.originalName, fullText: doc.fullText });
+    } else if (doc && !doc.fullText) {
+      res.status(400).json({ error: 'Document content not available' });
+    } else {
+      res.status(404).json({ error: 'Document not found' });
+    }
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 router.delete('/:id', async (req, res) => {
   try {
     const success = await documentService.deleteDocument(req.params.id);

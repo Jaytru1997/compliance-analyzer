@@ -37,6 +37,11 @@ export const deleteDocument = async (id: string): Promise<void> => {
   await api.delete(`/documents/${id}`);
 };
 
+export const fetchDocumentContent = async (id: string): Promise<{ id: string; originalName: string; fullText: string }> => {
+  const { data } = await api.get(`/documents/${id}/content`);
+  return data;
+};
+
 // ── Chat (Streaming) ─────────────────────────────────────
 export interface ChatSource {
   section: string;
