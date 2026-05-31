@@ -12,7 +12,7 @@ This project demonstrates a comprehensive set of skills tailored to building pro
 ## 2. AI & RAG Architecture
 
 - **Retrieval-Augmented Generation (RAG):** Designing and implementing an in-memory vector store with chunking strategies optimized for compliance documents.
-- **Anthropic Claude Integration:** Utilizing the latest `claude-3-5-sonnet-20241022` model for complex reasoning and gap analysis.
+- **Anthropic Claude Integration:** Utilizing Claude 3.5 Sonnet (`claude-3-5-sonnet`) for complex reasoning and gap analysis.
 - **Advanced Chunking:** Implementing hybrid chunking (semantic + fixed-size with overlap) to maintain document context.
 - **Metadata Enrichment:** Tagging chunks with hierarchical metadata (documentId, section, subsection, complianceCategory) to improve retrieval accuracy.
 

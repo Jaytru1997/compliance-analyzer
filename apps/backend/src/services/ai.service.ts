@@ -28,7 +28,7 @@ ${text.substring(0, MAX_CHARS)}
 `;
 
     const response = await anthropic.messages.create({
-      model: 'claude-3-5-sonnet-20241022',
+      model: 'claude-3-5-sonnet',
       max_tokens: 1024,
       temperature: 0.0,
       messages: [{ role: 'user', content: prompt }],
@@ -48,7 +48,7 @@ ${text.substring(0, MAX_CHARS)}
    */
   async answerQuery(query: string, contextChunks: DocumentChunk[]): Promise<string> {
     const contextText = contextChunks.map(c => `[Citation: ${c.metadata.section} (Page ${c.metadata.pageNumber})]\n${c.text}`).join('\n\n');
-    
+
     const prompt = `You are a senior mining safety compliance auditor.
 Answer the user's question using ONLY the provided document context.
 For every claim or requirement you state, you MUST provide a citation referencing the source section or page number provided in the context metadata.
@@ -64,7 +64,7 @@ Question: ${query}
 `;
 
     const response = await anthropic.messages.create({
-      model: 'claude-3-5-sonnet-20241022',
+      model: 'claude-3-5-sonnet',
       max_tokens: 1024,
       temperature: 0.0,
       messages: [{ role: 'user', content: prompt }],
@@ -111,7 +111,7 @@ Question: ${query}
 
     try {
       const stream = anthropic.messages.stream({
-        model: 'claude-3-5-sonnet-20241022',
+        model: 'claude-3-5-sonnet',
         max_tokens: 1024,
         temperature: 0.0,
         messages: [{ role: 'user', content: prompt }],
@@ -181,7 +181,7 @@ ${procedureText}
 `;
 
     const response = await anthropic.messages.create({
-      model: 'claude-3-5-sonnet-20241022',
+      model: 'claude-3-5-sonnet',
       max_tokens: 4096,
       temperature: 0.0,
       messages: [{ role: 'user', content: prompt }],

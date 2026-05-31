@@ -6,7 +6,7 @@ This guide provides instructions for setting up the AI-Powered Compliance Docume
 
 - Node.js (v18 or higher recommended)
 - pnpm or npm (This project uses npm workspaces/Turborepo)
-- An active Anthropic API Key (`claude-3-5-sonnet-20241022` access required)
+- An active Anthropic API Key (with access to Claude 3.5 Sonnet model)
 
 ## Installation
 

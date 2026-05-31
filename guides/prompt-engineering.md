@@ -1,6 +1,6 @@
 # Prompt Engineering System
 
-This document details the system prompts and prompt engineering techniques used to interact with the Anthropic Claude model (`claude-3-5-sonnet-20241022`).
+This document details the system prompts and prompt engineering techniques used to interact with the Anthropic Claude model (`claude-3-5-sonnet`).
 
 ## Core Principles
 

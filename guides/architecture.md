@@ -38,7 +38,7 @@ graph TD
     end
 
     subgraph External_Services [External AI Services]
-        Claude["Anthropic Claude<br/>claude-3-5-sonnet-20241022"]
+        Claude["Anthropic Claude<br/>claude-3-5-sonnet"]
         OpenAI["OpenAI Embeddings<br/>text-embedding-3-small<br/>(1536 dimensions)"]
     end
 
@@ -119,7 +119,7 @@ graph TD
 
 #### Anthropic Claude
 
-- **Model:** `claude-3-5-sonnet-20241022`
+- **Model:** `claude-3-5-sonnet`
 - **Purpose:**
   - Document summarization and topic extraction during ingestion
   - Q&A and chat responses with RAG-augmented context
