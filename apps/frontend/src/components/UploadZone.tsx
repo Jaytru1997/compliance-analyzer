@@ -1,17 +1,5 @@
 import React, { useCallback, useState } from 'react';
-import {
-  Box,
-  Typography,
-  Button,
-  LinearProgress,
-  Chip,
-  Alert,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-} from '@mui/material';
-import { CloudUpload, InsertDriveFile } from '@mui/icons-material';
+import { UploadCloud, File, AlertCircle } from 'lucide-react';
 import { uploadDocument } from '../api/client';
 import { DocumentMetadata } from '@compliance-analyzer/shared';
 
@@ -55,77 +43,87 @@ const UploadZone: React.FC<Props> = ({ onUploaded }) => {
   };
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-      <FormControl size="small" sx={{ maxWidth: 220 }}>
-        <InputLabel id="category-label">Document Category</InputLabel>
-        <Select
-          labelId="category-label"
-          id="upload-category"
+    <div className="flex flex-col gap-4">
+      <div className="w-full max-w-[220px]">
+        <label htmlFor="category-select" className="mb-1.5 block text-sm font-medium text-surface-700">
+          Document Category
+        </label>
+        <select
+          id="category-select"
           value={category}
-          label="Document Category"
           onChange={(e) => setCategory(e.target.value as 'Standard' | 'Procedure')}
+          className="input-field"
         >
-          <MenuItem value="Procedure">ACME Site Procedure</MenuItem>
-          <MenuItem value="Standard">Recognised Standard</MenuItem>
-        </Select>
-      </FormControl>
+          <option value="Procedure">ACME Site Procedure</option>
+          <option value="Standard">Recognised Standard</option>
+        </select>
+      </div>
 
-      <Box
+      <div
         id="upload-dropzone"
         onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
         onDragLeave={() => setDragging(false)}
         onDrop={onDrop}
-        sx={{
-          border: `2px dashed ${dragging ? '#6366f1' : 'rgba(255,255,255,0.12)'}`,
-          borderRadius: 3,
-          p: 5,
-          textAlign: 'center',
-          background: dragging
-            ? 'rgba(99,102,241,0.08)'
-            : 'rgba(255,255,255,0.02)',
-          transition: 'all 0.25s ease',
-          cursor: 'pointer',
-          '&:hover': {
-            borderColor: 'rgba(99,102,241,0.5)',
-            background: 'rgba(99,102,241,0.05)',
-          },
-        }}
         onClick={() => document.getElementById('file-input')?.click()}
+        className={`group relative flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed p-10 text-center transition-all duration-300 ${
+          dragging
+            ? 'border-primary-500 bg-primary-50'
+            : 'border-surface-200 bg-surface-50/50 hover:border-primary-400 hover:bg-surface-50'
+        }`}
       >
         <input
           id="file-input"
           type="file"
           accept=".pdf,.docx,.doc"
-          hidden
+          className="hidden"
           onChange={onFileChange}
         />
-        <CloudUpload sx={{ fontSize: 48, color: 'primary.main', mb: 1, opacity: 0.8 }} />
-        <Typography variant="h6" fontWeight={600} gutterBottom>
+        
+        <div className="mb-4 rounded-full bg-white p-4 shadow-sm ring-1 ring-surface-200 transition-transform group-hover:scale-105 group-hover:shadow-md">
+          <UploadCloud className="h-8 w-8 text-primary-500" />
+        </div>
+        
+        <h3 className="mb-1 text-lg font-semibold text-surface-900">
           Drop a document here
-        </Typography>
-        <Typography variant="body2" color="text.secondary" gutterBottom>
+        </h3>
+        
+        <p className="mb-6 max-w-xs text-sm text-surface-500">
           Supports PDF and DOCX — mining procedures &amp; standards
-        </Typography>
-        <Button variant="outlined" size="small" sx={{ mt: 1 }}>
+        </p>
+        
+        <button className="btn-secondary">
           Browse Files
-        </Button>
-        <Box sx={{ mt: 1.5, display: 'flex', justifyContent: 'center', gap: 1 }}>
-          <Chip icon={<InsertDriveFile />} label="PDF" size="small" sx={{ opacity: 0.6 }} />
-          <Chip icon={<InsertDriveFile />} label="DOCX" size="small" sx={{ opacity: 0.6 }} />
-        </Box>
-      </Box>
+        </button>
+        
+        <div className="mt-6 flex justify-center gap-2">
+          <span className="inline-flex items-center gap-1 rounded-md bg-white px-2 py-1 text-xs font-medium text-surface-600 shadow-sm ring-1 ring-surface-200">
+            <File className="h-3.5 w-3.5" /> PDF
+          </span>
+          <span className="inline-flex items-center gap-1 rounded-md bg-white px-2 py-1 text-xs font-medium text-surface-600 shadow-sm ring-1 ring-surface-200">
+            <File className="h-3.5 w-3.5" /> DOCX
+          </span>
+        </div>
+      </div>
 
       {uploading && (
-        <Box>
-          <Typography variant="caption" color="text.secondary">
-            Uploading & analyzing with AI…
-          </Typography>
-          <LinearProgress sx={{ mt: 0.5, borderRadius: 2 }} />
-        </Box>
+        <div className="animate-fade-in rounded-xl bg-white p-4 shadow-sm ring-1 ring-surface-200">
+          <div className="mb-2 flex items-center justify-between">
+            <span className="text-sm font-medium text-surface-700">Uploading & analyzing with AI…</span>
+            <div className="h-4 w-4 animate-spin rounded-full border-2 border-surface-200 border-t-primary-600"></div>
+          </div>
+          <div className="h-1.5 w-full overflow-hidden rounded-full bg-surface-100">
+            <div className="h-full w-full animate-[progress_1s_ease-in-out_infinite] bg-primary-500 rounded-full"></div>
+          </div>
+        </div>
       )}
 
-      {error && <Alert severity="error">{error}</Alert>}
-    </Box>
+      {error && (
+        <div className="animate-fade-in flex items-center gap-3 rounded-xl bg-red-50 p-4 text-sm font-medium text-red-800 ring-1 ring-red-200">
+          <AlertCircle className="h-5 w-5 shrink-0 text-red-500" />
+          <p>{error}</p>
+        </div>
+      )}
+    </div>
   );
 };
 

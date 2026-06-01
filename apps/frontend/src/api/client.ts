@@ -2,8 +2,9 @@ import axios from 'axios';
 import { DocumentMetadata, GapAnalysisResponse } from '@compliance-analyzer/shared';
 
 // const api = axios.create({ baseURL: '/api' });
+const baseURL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:3001',
+  baseURL: `${baseURL}/api`,
 });
 
 // ── Auth ────────────────────────────────────────────────
@@ -69,7 +70,8 @@ export const streamQuery = async (
   onDone: () => void,
   onError: (err: string) => void
 ): Promise<void> => {
-  const response = await fetch('/api/chat/query', {
+  const baseURL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+  const response = await fetch(`${baseURL}/api/chat/query`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ query, documentId }),

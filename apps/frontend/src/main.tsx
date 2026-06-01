@@ -1,62 +1,54 @@
 import React, { Suspense, lazy } from 'react';
-import './index.css';
 import ReactDOM from 'react-dom/client';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { ThemeProvider } from '@mui/material/styles';
-import CssBaseline from '@mui/material/CssBaseline';
-import { Box, CircularProgress } from '@mui/material';
-import theme from './theme';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import './index.css';
+
 import ProtectedRoute from './components/ProtectedRoute';
 
-// Lazy-load pages for code-splitting
+// Lazy load pages
 const LoginPage = lazy(() => import('./pages/LoginPage'));
 const DashboardPage = lazy(() => import('./pages/DashboardPage'));
 const DocumentDetailPage = lazy(() => import('./pages/DocumentDetailPage'));
 const GapAnalysisPage = lazy(() => import('./pages/GapAnalysisPage'));
 
-// Fallback loader while route chunks download
 const Fallback = () => (
-  <Box sx={{ display: 'flex', height: '100vh', alignItems: 'center', justifyContent: 'center' }}>
-    <CircularProgress />
-  </Box>
+  <div className="flex h-screen w-full items-center justify-center bg-surface-50">
+    <div className="h-10 w-10 animate-spin rounded-full border-4 border-surface-200 border-t-primary-600"></div>
+  </div>
 );
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <BrowserRouter>
-        <Suspense fallback={<Fallback />}>
-          <Routes>
-            <Route path="/login" element={<LoginPage />} />
-            <Route
-              path="/dashboard"
-              element={
-                <ProtectedRoute>
-                  <DashboardPage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/documents/:id"
-              element={
-                <ProtectedRoute>
-                  <DocumentDetailPage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/gap-analysis"
-              element={
-                <ProtectedRoute>
-                  <GapAnalysisPage />
-                </ProtectedRoute>
-              }
-            />
-            <Route path="*" element={<Navigate to="/login" replace />} />
-          </Routes>
-        </Suspense>
-      </BrowserRouter>
-    </ThemeProvider>
+    <Router>
+      <Suspense fallback={<Fallback />}>
+        <Routes>
+          <Route path="/" element={<LoginPage />} />
+          <Route
+            path="/dashboard"
+            element={
+              <ProtectedRoute>
+                <DashboardPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/document/:id"
+            element={
+              <ProtectedRoute>
+                <DocumentDetailPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/gap-analysis"
+            element={
+              <ProtectedRoute>
+                <GapAnalysisPage />
+              </ProtectedRoute>
+            }
+          />
+        </Routes>
+      </Suspense>
+    </Router>
   </React.StrictMode>
 );

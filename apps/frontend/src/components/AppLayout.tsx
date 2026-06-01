@@ -1,197 +1,133 @@
 import React, { useState } from 'react';
-import { AppBar, Toolbar, Typography, Box, Button, Avatar, Chip, IconButton, Menu, MenuItem, ListItemIcon, ListItemText, Divider } from '@mui/material';
-import { Security, Logout, Menu as MenuIcon, Dashboard, Analytics } from '@mui/icons-material';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { Shield, LogOut, Menu, LayoutDashboard, BarChart2 } from 'lucide-react';
 import { useAuthStore } from '../stores/authStore';
 
 const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user, logout } = useAuthStore();
   const navigate = useNavigate();
   const location = useLocation();
-  
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const open = Boolean(anchorEl);
 
-  const handleMenuClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleMenuClose = () => {
-    setAnchorEl(null);
-  };
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const handleNavigate = (path: string) => {
     navigate(path);
-    handleMenuClose();
+    setIsMobileMenuOpen(false);
   };
 
   const handleLogout = () => {
     logout();
-    navigate('/login');
-    handleMenuClose();
+    navigate('/');
+    setIsMobileMenuOpen(false);
   };
 
+  const getNavClass = (isActive: boolean) =>
+    `px-3 py-2 rounded-md text-sm font-medium transition-colors ${isActive
+      ? 'bg-surface-100 text-surface-900'
+      : 'text-surface-600 hover:bg-surface-100 hover:text-surface-900'
+    }`;
+
+  const isDashboardActive = location.pathname.startsWith('/dashboard') || location.pathname.startsWith('/document');
+  const isGapActive = location.pathname === '/gap-analysis';
+
   return (
-    <Box sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-      <AppBar
-        position="sticky"
-        elevation={0}
-        sx={{
-          backgroundColor: '#ffffff',
-          borderBottom: '1px solid #e2e8f0',
-          color: 'text.primary',
-        }}
-      >
-        <Toolbar sx={{ gap: { xs: 1, sm: 2 } }}>
-          <Box
-            sx={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              width: 32,
-              height: 32,
-              borderRadius: '6px',
-              backgroundColor: '#0f172a',
-            }}
-          >
-            <Security sx={{ fontSize: 18, color: '#ffffff' }} />
-          </Box>
-          <Typography
-            variant="h6"
-            fontWeight={700}
-            sx={{ 
-              cursor: 'pointer', 
-              letterSpacing: '-0.3px', 
-              color: '#0f172a',
-              display: { xs: 'none', sm: 'block' } // Hide text on very small screens to save space
-            }}
-            onClick={() => navigate('/dashboard')}
-          >
-            ComplianceAI
-          </Typography>
-
-          <Chip
-            label="Mining Safety"
-            size="small"
-            sx={{
-              backgroundColor: '#f1f5f9',
-              color: '#475569',
-              border: '1px solid #cbd5e1',
-              fontWeight: 600,
-              fontSize: '0.7rem',
-              display: { xs: 'none', md: 'flex' } // Only show chip on medium+ screens
-            }}
-          />
-
-          <Box sx={{ flex: 1 }} />
+    <div className="flex min-h-screen flex-col bg-surface-50">
+      <header className="sticky top-0 z-40 w-full border-b border-surface-200 bg-white/80 backdrop-blur-md">
+        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center gap-3">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-surface-900 text-white shadow-sm">
+              <Shield className="h-5 w-5" />
+            </div>
+            <span
+              className="hidden cursor-pointer text-lg font-bold tracking-tight text-surface-900 sm:block"
+              onClick={() => handleNavigate('/dashboard')}
+            >
+              ComplianceAI
+            </span>
+            <span className="hidden rounded-full border border-surface-200 bg-surface-50 px-2.5 py-0.5 text-xs font-semibold text-surface-600 md:inline-flex">
+              Mining Safety
+            </span>
+          </div>
 
           {/* Desktop Navigation */}
-          <Box sx={{ display: { xs: 'none', md: 'flex' }, gap: 1, alignItems: 'center' }}>
-            <Button
-              size="small"
+          <div className="hidden items-center gap-2 md:flex">
+            <button
               onClick={() => handleNavigate('/dashboard')}
-              sx={{ 
-                color: location.pathname.startsWith('/dashboard') || location.pathname.startsWith('/documents') ? 'text.primary' : 'text.secondary', 
-                backgroundColor: location.pathname.startsWith('/dashboard') || location.pathname.startsWith('/documents') ? '#f1f5f9' : 'transparent',
-                '&:hover': { color: 'text.primary', backgroundColor: '#f1f5f9' } 
-              }}
+              className={getNavClass(isDashboardActive)}
             >
               Dashboard
-            </Button>
-            <Button
-              size="small"
+            </button>
+            <button
               onClick={() => handleNavigate('/gap-analysis')}
-              sx={{ 
-                color: location.pathname === '/gap-analysis' ? 'text.primary' : 'text.secondary', 
-                backgroundColor: location.pathname === '/gap-analysis' ? '#f1f5f9' : 'transparent',
-                '&:hover': { color: 'text.primary', backgroundColor: '#f1f5f9' } 
-              }}
+              className={getNavClass(isGapActive)}
             >
               Gap Analysis
-            </Button>
+            </button>
 
-            <Avatar
-              sx={{ width: 32, height: 32, bgcolor: '#e2e8f0', color: '#0f172a', fontSize: '0.8rem', fontWeight: 600, ml: 1 }}
-            >
+            <div className="ml-2 flex h-8 w-8 items-center justify-center rounded-full bg-surface-200 text-sm font-semibold text-surface-900">
               {user?.username?.charAt(0).toUpperCase()}
-            </Avatar>
+            </div>
 
-            <Button
-              size="small"
-              startIcon={<Logout sx={{ fontSize: 16 }} />}
+            <button
               onClick={handleLogout}
-              sx={{ color: 'text.secondary', '&:hover': { color: 'error.main', backgroundColor: '#fef2f2' } }}
+              className="ml-2 flex items-center gap-1.5 rounded-md px-3 py-2 text-sm font-medium text-surface-600 transition-colors hover:bg-red-50 hover:text-red-600"
             >
+              <LogOut className="h-4 w-4" />
               Logout
-            </Button>
-          </Box>
+            </button>
+          </div>
 
-          {/* Mobile Navigation (Hamburger Menu) */}
-          <Box sx={{ display: { xs: 'flex', md: 'none' }, alignItems: 'center', gap: 1 }}>
-            <Avatar
-              sx={{ width: 28, height: 28, bgcolor: '#e2e8f0', color: '#0f172a', fontSize: '0.7rem', fontWeight: 600 }}
-            >
+          {/* Mobile Menu Toggle */}
+          <div className="flex items-center gap-3 md:hidden">
+            <div className="flex h-7 w-7 items-center justify-center rounded-full bg-surface-200 text-xs font-semibold text-surface-900">
               {user?.username?.charAt(0).toUpperCase()}
-            </Avatar>
-            <IconButton
-              size="small"
-              onClick={handleMenuClick}
-              sx={{ color: '#0f172a' }}
+            </div>
+            <button
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="rounded-md p-1.5 text-surface-600 hover:bg-surface-100 hover:text-surface-900"
             >
-              <MenuIcon />
-            </IconButton>
-            <Menu
-              anchorEl={anchorEl}
-              open={open}
-              onClose={handleMenuClose}
-              PaperProps={{
-                elevation: 0,
-                sx: {
-                  overflow: 'visible',
-                  filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.1))',
-                  mt: 1.5,
-                  border: '1px solid #e2e8f0',
-                  '& .MuiAvatar-root': {
-                    width: 32,
-                    height: 32,
-                    ml: -0.5,
-                    mr: 1,
-                  },
-                },
-              }}
-              transformOrigin={{ horizontal: 'right', vertical: 'top' }}
-              anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
-            >
-              <MenuItem onClick={() => handleNavigate('/dashboard')} selected={location.pathname.startsWith('/dashboard') || location.pathname.startsWith('/documents')}>
-                <ListItemIcon>
-                  <Dashboard fontSize="small" sx={{ color: '#64748b' }} />
-                </ListItemIcon>
-                <ListItemText primary="Dashboard" sx={{ color: '#0f172a' }} />
-              </MenuItem>
-              <MenuItem onClick={() => handleNavigate('/gap-analysis')} selected={location.pathname === '/gap-analysis'}>
-                <ListItemIcon>
-                  <Analytics fontSize="small" sx={{ color: '#64748b' }} />
-                </ListItemIcon>
-                <ListItemText primary="Gap Analysis" sx={{ color: '#0f172a' }} />
-              </MenuItem>
-              <Divider />
-              <MenuItem onClick={handleLogout}>
-                <ListItemIcon>
-                  <Logout fontSize="small" sx={{ color: '#ef4444' }} />
-                </ListItemIcon>
-                <ListItemText primary="Logout" sx={{ color: '#ef4444' }} />
-              </MenuItem>
-            </Menu>
-          </Box>
-        </Toolbar>
-      </AppBar>
+              <Menu className="h-5 w-5" />
+            </button>
+          </div>
+        </div>
+      </header>
 
-      <Box component="main" sx={{ flex: 1, p: { xs: 2, md: 4, lg: 6 }, display: 'flex', justifyContent: 'center' }}>
-        <Box sx={{ width: '100%', maxWidth: 1400 }}>
+      {/* Mobile Menu Dropdown */}
+      {isMobileMenuOpen && (
+        <div className="absolute top-16 right-4 z-50 w-48 overflow-hidden rounded-xl border border-surface-200 bg-white p-1 shadow-lg animate-fade-in md:hidden">
+          <button
+            onClick={() => handleNavigate('/dashboard')}
+            className={`flex w-full items-center gap-2 rounded-md px-3 py-2.5 text-sm transition-colors ${isDashboardActive ? 'bg-surface-100 font-medium text-surface-900' : 'text-surface-700 hover:bg-surface-50'
+              }`}
+          >
+            <LayoutDashboard className="h-4 w-4 text-surface-500" />
+            Dashboard
+          </button>
+          <button
+            onClick={() => handleNavigate('/gap-analysis')}
+            className={`flex w-full items-center gap-2 rounded-md px-3 py-2.5 text-sm transition-colors ${isGapActive ? 'bg-surface-100 font-medium text-surface-900' : 'text-surface-700 hover:bg-surface-50'
+              }`}
+          >
+            <BarChart2 className="h-4 w-4 text-surface-500" />
+            Gap Analysis
+          </button>
+          <div className="my-1 h-px bg-surface-200"></div>
+          <button
+            onClick={handleLogout}
+            className="flex w-full items-center gap-2 rounded-md px-3 py-2.5 text-sm text-red-600 transition-colors hover:bg-red-50"
+          >
+            <LogOut className="h-4 w-4" />
+            Logout
+          </button>
+        </div>
+      )}
+
+      <main className="flex-1 p-4 sm:p-6 lg:p-8 flex justify-center">
+        <div className="w-full max-w-7xl">
           {children}
-        </Box>
-      </Box>
-    </Box>
+        </div>
+      </main>
+    </div>
   );
 };
 

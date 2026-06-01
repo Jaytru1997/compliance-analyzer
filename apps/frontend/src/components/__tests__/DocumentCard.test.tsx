@@ -1,18 +1,14 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { BrowserRouter } from 'react-router-dom';
 import { DocumentMetadata } from '@compliance-analyzer/shared';
 
 import DocumentCard from '../DocumentCard';
 
-// Create a test theme
-const testTheme = createTheme();
-
 // Wrapper component for tests - includes BrowserRouter for Router context
 const TestWrapper = ({ children }: { children: React.ReactNode }) => (
     <BrowserRouter>
-        <ThemeProvider theme={testTheme}>{children}</ThemeProvider>
+        {children}
     </BrowserRouter>
 );
 
@@ -64,50 +60,50 @@ describe('DocumentCard', () => {
 
     describe('rendering', () => {
         it('should render document name', () => {
-            render(<DocumentCard doc={mockPdfDoc} />, { wrapper: TestWrapper });
+            render(<DocumentCard doc={mockPdfDoc} onDelete={vi.fn()} />, { wrapper: TestWrapper });
             expect(screen.getByText(mockPdfDoc.originalName)).toBeInTheDocument();
         });
 
         it('should render compliance category chip', () => {
-            render(<DocumentCard doc={mockPdfDoc} />, { wrapper: TestWrapper });
+            render(<DocumentCard doc={mockPdfDoc} onDelete={vi.fn()} />, { wrapper: TestWrapper });
             expect(screen.getByText('Procedure')).toBeInTheDocument();
         });
 
         it('should render file size', () => {
-            render(<DocumentCard doc={mockPdfDoc} />, { wrapper: TestWrapper });
+            render(<DocumentCard doc={mockPdfDoc} onDelete={vi.fn()} />, { wrapper: TestWrapper });
             expect(screen.getByText('100.0 KB')).toBeInTheDocument();
         });
 
         it('should render formatted upload date', () => {
-            render(<DocumentCard doc={mockPdfDoc} />, { wrapper: TestWrapper });
+            render(<DocumentCard doc={mockPdfDoc} onDelete={vi.fn()} />, { wrapper: TestWrapper });
             expect(screen.getByText('May 15, 2024')).toBeInTheDocument();
         });
 
         it('should render summary when available', () => {
-            render(<DocumentCard doc={mockPdfDoc} />, { wrapper: TestWrapper });
+            render(<DocumentCard doc={mockPdfDoc} onDelete={vi.fn()} />, { wrapper: TestWrapper });
             expect(screen.getByText(mockPdfDoc.summary!)).toBeInTheDocument();
         });
 
         it('should render topics when available', () => {
-            render(<DocumentCard doc={mockPdfDoc} />, { wrapper: TestWrapper });
+            render(<DocumentCard doc={mockPdfDoc} onDelete={vi.fn()} />, { wrapper: TestWrapper });
             expect(screen.getByText('Safety')).toBeInTheDocument();
         });
 
         it('should show +N indicator for topics beyond the first 4', () => {
-            render(<DocumentCard doc={mockPdfDoc} />, { wrapper: TestWrapper });
+            render(<DocumentCard doc={mockPdfDoc} onDelete={vi.fn()} />, { wrapper: TestWrapper });
             expect(screen.getByText('+1')).toBeInTheDocument();
         });
     });
 
     describe('file type icons', () => {
         it('should show icon for PDF documents', () => {
-            const { container } = render(<DocumentCard doc={mockPdfDoc} />, { wrapper: TestWrapper });
+            const { container } = render(<DocumentCard doc={mockPdfDoc} onDelete={vi.fn()} />, { wrapper: TestWrapper });
             const svgIcons = container.querySelectorAll('svg');
             expect(svgIcons.length).toBeGreaterThan(0);
         });
 
         it('should show icon for non-PDF documents', () => {
-            const { container } = render(<DocumentCard doc={mockDocxDoc} />, { wrapper: TestWrapper });
+            const { container } = render(<DocumentCard doc={mockDocxDoc} onDelete={vi.fn()} />, { wrapper: TestWrapper });
             const svgIcons = container.querySelectorAll('svg');
             expect(svgIcons.length).toBeGreaterThan(0);
         });
@@ -115,19 +111,19 @@ describe('DocumentCard', () => {
 
     describe('compliance category styling', () => {
         it('should display Standard category', () => {
-            render(<DocumentCard doc={mockDocxDoc} />, { wrapper: TestWrapper });
+            render(<DocumentCard doc={mockDocxDoc} onDelete={vi.fn()} />, { wrapper: TestWrapper });
             expect(screen.getByText('Standard')).toBeInTheDocument();
         });
 
         it('should display Procedure category', () => {
-            render(<DocumentCard doc={mockPdfDoc} />, { wrapper: TestWrapper });
+            render(<DocumentCard doc={mockPdfDoc} onDelete={vi.fn()} />, { wrapper: TestWrapper });
             expect(screen.getByText('Procedure')).toBeInTheDocument();
         });
     });
 
     describe('date formatting', () => {
         it('should format dates correctly', () => {
-            render(<DocumentCard doc={mockPdfDoc} />, { wrapper: TestWrapper });
+            render(<DocumentCard doc={mockPdfDoc} onDelete={vi.fn()} />, { wrapper: TestWrapper });
             expect(screen.getByText('May 15, 2024')).toBeInTheDocument();
         });
 
@@ -136,14 +132,14 @@ describe('DocumentCard', () => {
                 ...mockPdfDoc,
                 uploadDate: '2024-01-01T00:00:00Z',
             };
-            render(<DocumentCard doc={docWithDifferentDate} />, { wrapper: TestWrapper });
+            render(<DocumentCard doc={docWithDifferentDate} onDelete={vi.fn()} />, { wrapper: TestWrapper });
             expect(screen.getByText('Jan 1, 2024')).toBeInTheDocument();
         });
     });
 
     describe('file size formatting', () => {
         it('should format file size in KB', () => {
-            render(<DocumentCard doc={mockPdfDoc} />, { wrapper: TestWrapper });
+            render(<DocumentCard doc={mockPdfDoc} onDelete={vi.fn()} />, { wrapper: TestWrapper });
             expect(screen.getByText('100.0 KB')).toBeInTheDocument();
         });
 
@@ -152,7 +148,7 @@ describe('DocumentCard', () => {
                 ...mockPdfDoc,
                 size: 1024,
             };
-            render(<DocumentCard doc={smallDoc} />, { wrapper: TestWrapper });
+            render(<DocumentCard doc={smallDoc} onDelete={vi.fn()} />, { wrapper: TestWrapper });
             expect(screen.getByText('1.0 KB')).toBeInTheDocument();
         });
 
@@ -161,14 +157,14 @@ describe('DocumentCard', () => {
                 ...mockPdfDoc,
                 size: 5242880, // 5MB
             };
-            render(<DocumentCard doc={largeDoc} />, { wrapper: TestWrapper });
+            render(<DocumentCard doc={largeDoc} onDelete={vi.fn()} />, { wrapper: TestWrapper });
             expect(screen.getByText('5120.0 KB')).toBeInTheDocument();
         });
     });
 
     describe('edge cases', () => {
         it('should handle documents with no optional fields', () => {
-            const { container } = render(<DocumentCard doc={minimalDoc} />, { wrapper: TestWrapper });
+            const { container } = render(<DocumentCard doc={minimalDoc} onDelete={vi.fn()} />, { wrapper: TestWrapper });
             expect(container).toBeInTheDocument();
             expect(screen.getByText('Document.txt')).toBeInTheDocument();
         });
@@ -178,7 +174,7 @@ describe('DocumentCard', () => {
                 ...mockPdfDoc,
                 size: 0,
             };
-            render(<DocumentCard doc={zeroByteDoc} />, { wrapper: TestWrapper });
+            render(<DocumentCard doc={zeroByteDoc} onDelete={vi.fn()} />, { wrapper: TestWrapper });
             expect(screen.getByText('0.0 KB')).toBeInTheDocument();
         });
 
@@ -187,7 +183,7 @@ describe('DocumentCard', () => {
                 ...mockPdfDoc,
                 topics: Array.from({ length: 20 }, (_, i) => `Topic${i + 1}`),
             };
-            render(<DocumentCard doc={manyTopicsDoc} />, { wrapper: TestWrapper });
+            render(<DocumentCard doc={manyTopicsDoc} onDelete={vi.fn()} />, { wrapper: TestWrapper });
             expect(screen.getByText('Topic1')).toBeInTheDocument();
             expect(screen.getByText('+16')).toBeInTheDocument();
         });

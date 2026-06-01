@@ -1,17 +1,7 @@
 import React from 'react';
-import {
-  Card,
-  CardContent,
-  CardActionArea,
-  Typography,
-  Box,
-  Chip,
-  Tooltip,
-  IconButton,
-} from '@mui/material';
-import { PictureAsPdf, Article, CalendarToday, DeleteOutline } from '@mui/icons-material';
 import { DocumentMetadata } from '@compliance-analyzer/shared';
 import { useNavigate } from 'react-router-dom';
+import { FileText, File, Calendar, Trash2 } from 'lucide-react';
 
 interface Props {
   doc: DocumentMetadata;
@@ -26,147 +16,77 @@ const DocumentCard: React.FC<Props> = ({ doc, onDelete }) => {
     new Date(iso).toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' });
 
   return (
-    <Card
-      sx={{
-        transition: 'all 0.2s ease',
-        '&:hover': {
-          transform: 'translateY(-2px)',
-          boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)',
-          borderColor: '#94a3b8',
-        },
-      }}
+    <div 
+      className="glass-card group cursor-pointer"
+      onClick={() => navigate(`/document/${doc.id}`)}
     >
-      <CardActionArea onClick={() => navigate(`/documents/${doc.id}`)}>
-        <CardContent sx={{ p: 3 }}>
-          {/* Header row */}
-          <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2, mb: 2 }}>
-            <Box
-              sx={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: 44,
-                height: 44,
-                borderRadius: 2,
-                flexShrink: 0,
-                backgroundColor: isPdf ? '#fef2f2' : '#eff6ff',
-                border: `1px solid ${isPdf ? '#fecaca' : '#bfdbfe'}`,
+      <div className="p-5">
+        {/* Header row */}
+        <div className="flex items-start gap-4 mb-4">
+          <div className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border ${isPdf ? 'bg-red-50 border-red-200 text-red-500' : 'bg-blue-50 border-blue-200 text-blue-600'}`}>
+            {isPdf ? <FileText className="h-6 w-6" /> : <File className="h-6 w-6" />}
+          </div>
+
+          <div className="flex-1 min-w-0">
+            <h3 className="truncate text-base font-semibold text-surface-900 leading-tight mb-1" title={doc.originalName}>
+              {doc.originalName}
+            </h3>
+            <div className="flex flex-wrap gap-2 mt-1.5">
+              <span className={`inline-flex items-center px-2 py-0.5 rounded text-[11px] font-semibold border ${doc.complianceCategory === 'Standard' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-indigo-50 text-indigo-700 border-indigo-200'}`}>
+                {doc.complianceCategory}
+              </span>
+            </div>
+          </div>
+
+          {onDelete && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onDelete(doc.id);
               }}
+              className="p-1.5 text-surface-400 transition-colors hover:bg-red-50 hover:text-red-500 rounded-md opacity-0 group-hover:opacity-100 focus:opacity-100"
             >
-              {isPdf ? (
-                <PictureAsPdf sx={{ color: '#ef4444', fontSize: 22 }} />
-              ) : (
-                <Article sx={{ color: '#2563eb', fontSize: 22 }} />
-              )}
-            </Box>
+              <Trash2 className="h-4 w-4" />
+            </button>
+          )}
+        </div>
 
-            <Box sx={{ flex: 1, minWidth: 0 }}>
-              <Tooltip title={doc.originalName}>
-                <Typography
-                  variant="subtitle1"
-                  fontWeight={600}
-                  color="#0f172a"
-                  sx={{
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                    whiteSpace: 'nowrap',
-                    lineHeight: 1.3,
-                  }}
-                >
-                  {doc.originalName}
-                </Typography>
-              </Tooltip>
-              <Box sx={{ display: 'flex', gap: 1, mt: 0.5, flexWrap: 'wrap' }}>
-                <Chip
-                  label={doc.complianceCategory}
-                  size="small"
-                  sx={{
-                    backgroundColor: doc.complianceCategory === 'Standard' ? '#ecfdf5' : '#e0e7ff',
-                    color: doc.complianceCategory === 'Standard' ? '#059669' : '#4338ca',
-                    border: `1px solid ${doc.complianceCategory === 'Standard' ? '#a7f3d0' : '#c7d2fe'}`,
-                    fontWeight: 600,
-                    fontSize: '0.68rem',
-                    height: 20,
-                  }}
-                />
-              </Box>
-            </Box>
+        {/* Summary */}
+        {doc.summary && (
+          <p className="mb-4 line-clamp-2 text-sm text-surface-600 leading-relaxed">
+            {doc.summary}
+          </p>
+        )}
 
-            {onDelete && (
-              <IconButton
-                size="small"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onDelete(doc.id);
-                }}
-                sx={{
-                  color: '#94a3b8',
-                  '&:hover': { color: '#ef4444', backgroundColor: '#fef2f2' },
-                }}
+        {/* Topics */}
+        {doc.topics && doc.topics.length > 0 && (
+          <div className="mb-4 flex flex-wrap gap-1.5">
+            {doc.topics.slice(0, 4).map((t) => (
+              <span
+                key={t}
+                className="inline-flex items-center rounded-md border border-surface-200 bg-surface-50 px-2 py-0.5 text-[10px] font-medium text-surface-600"
               >
-                <DeleteOutline fontSize="small" />
-              </IconButton>
+                {t}
+              </span>
+            ))}
+            {doc.topics.length > 4 && (
+              <span className="inline-flex items-center rounded-md bg-surface-50 px-1.5 py-0.5 text-[10px] font-medium text-surface-400">
+                +{doc.topics.length - 4}
+              </span>
             )}
-          </Box>
+          </div>
+        )}
 
-          {/* Summary */}
-          {doc.summary && (
-            <Typography
-              variant="body2"
-              color="#475569"
-              sx={{
-                mb: 2,
-                display: '-webkit-box',
-                WebkitLineClamp: 2,
-                WebkitBoxOrient: 'vertical',
-                overflow: 'hidden',
-                lineHeight: 1.55,
-              }}
-            >
-              {doc.summary}
-            </Typography>
-          )}
-
-          {/* Topics */}
-          {doc.topics && doc.topics.length > 0 && (
-            <Box sx={{ display: 'flex', gap: 0.75, flexWrap: 'wrap', mb: 2 }}>
-              {doc.topics.slice(0, 4).map((t) => (
-                <Chip
-                  key={t}
-                  label={t}
-                  size="small"
-                  sx={{
-                    backgroundColor: '#f1f5f9',
-                    border: '1px solid #e2e8f0',
-                    fontSize: '0.65rem',
-                    height: 18,
-                    color: '#64748b',
-                  }}
-                />
-              ))}
-              {doc.topics.length > 4 && (
-                <Chip
-                  label={`+${doc.topics.length - 4}`}
-                  size="small"
-                  sx={{ fontSize: '0.65rem', height: 18, backgroundColor: '#f1f5f9', color: '#94a3b8', border: '1px solid transparent' }}
-                />
-              )}
-            </Box>
-          )}
-
-          {/* Footer */}
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-            <CalendarToday sx={{ fontSize: 12, color: '#94a3b8' }} />
-            <Typography variant="caption" color="#64748b">
-              {formatDate(doc.uploadDate)}
-            </Typography>
-            <Typography variant="caption" color="#64748b" sx={{ ml: 'auto' }}>
-              {(doc.size / 1024).toFixed(1)} KB
-            </Typography>
-          </Box>
-        </CardContent>
-      </CardActionArea>
-    </Card>
+        {/* Footer */}
+        <div className="flex items-center gap-1.5 text-[11px] text-surface-500 mt-auto pt-2 border-t border-surface-100">
+          <Calendar className="h-3 w-3" />
+          <span>{formatDate(doc.uploadDate)}</span>
+          <span className="ml-auto font-medium text-surface-400">
+            {(doc.size / 1024).toFixed(1)} KB
+          </span>
+        </div>
+      </div>
+    </div>
   );
 };
 

@@ -1,33 +1,15 @@
 import React, { useEffect, useState, useRef } from 'react';
-import {
-  Box,
-  Typography,
-  Chip,
-  Skeleton,
-  Divider,
-  Button,
-  Grid,
-  Card,
-  CardContent,
-  Alert,
-  IconButton,
-  TextField,
-  Paper,
-  CircularProgress,
-  Avatar,
-  Tabs,
-  Tab,
-} from '@mui/material';
-import {
-  ArrowBack,
-  Send,
-  SmartToy,
-  Person,
-  FormatQuote,
-  Topic,
-  Description,
-} from '@mui/icons-material';
 import { useNavigate, useParams } from 'react-router-dom';
+import { 
+  ArrowLeft, 
+  Send, 
+  Bot, 
+  User, 
+  Quote, 
+  Hash, 
+  FileText,
+  AlertCircle
+} from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import AppLayout from '../components/AppLayout';
 import { fetchDocument, streamQuery, fetchDocumentContent } from '../api/client';
@@ -39,10 +21,6 @@ interface Message {
   sources?: { section: string; pageNumber: number; textSnippet: string }[];
 }
 
-/**
- * Parses citations from message content and returns cleaned content + extracted citations
- * Handles malformed citations like "[Citation:tion (Page 1)]" and "[Citation: te ... (Page 1]]"
- */
 function extractCitationsFromContent(content: string): {
   cleanContent: string;
   citations: { section: string; pageNumber: number }[];
@@ -50,22 +28,18 @@ function extractCitationsFromContent(content: string): {
   const citations: { section: string; pageNumber: number }[] = [];
   let cleanContent = content;
 
-  // Match citations in various formats: [Citation: ... (Page X)] or [Citation: ... (Page X]]
   const citationRegex = /\[Citation:\s*([^\(\[\]]*?)\s*\(\s*(?:Page|p\.?)\s*(\d+)\]?\]?/gi;
 
   let match;
-  const matches = [];
   while ((match = citationRegex.exec(content)) !== null) {
     const section = match[1].trim() || 'Referenced Section';
     const pageNumber = parseInt(match[2], 10);
 
     if (!isNaN(pageNumber)) {
       citations.push({ section, pageNumber });
-      matches.push(match[0]);
     }
   }
 
-  // Remove all citation markers from content
   cleanContent = content.replace(/\[Citation:[^\[\]]*?\([^)]*(?:Page|p\.?)[^\)]*\]?\]?/gi, '').trim();
 
   return { cleanContent, citations };
@@ -93,14 +67,12 @@ const DocumentDetailPage: React.FC = () => {
   }, [id]);
 
   useEffect(() => {
-    // Auto-scroll to bottom on new messages
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
   }, [messages, querying]);
 
   useEffect(() => {
-    // Load full document content when content tab is selected
     if (activeTab === 1 && id && !fullText && !loadingContent) {
       setLoadingContent(true);
       fetchDocumentContent(id)
@@ -121,14 +93,12 @@ const DocumentDetailPage: React.FC = () => {
     setMessages((prev) => [...prev, { role: 'user', content: q }]);
     setQuerying(true);
 
-    // Prepare a placeholder for the assistant's reply
     setMessages((prev) => [...prev, { role: 'assistant', content: '', sources: [] }]);
 
     try {
       await streamQuery(
         q,
         id,
-        // onToken: Append token to the last message's content
         (token) => {
           setMessages((prev) => {
             const newMsgs = [...prev];
@@ -137,7 +107,6 @@ const DocumentDetailPage: React.FC = () => {
             return newMsgs;
           });
         },
-        // onSources: Set the sources for the last message
         (sources) => {
           setMessages((prev) => {
             const newMsgs = [...prev];
@@ -146,11 +115,9 @@ const DocumentDetailPage: React.FC = () => {
             return newMsgs;
           });
         },
-        // onDone
         () => {
           setQuerying(false);
         },
-        // onError
         (errStr) => {
           setMessages((prev) => {
             const newMsgs = [...prev];
@@ -173,8 +140,8 @@ const DocumentDetailPage: React.FC = () => {
   if (loading) {
     return (
       <AppLayout>
-        <Skeleton variant="rounded" height={200} sx={{ mb: 3, borderRadius: 2 }} />
-        <Skeleton variant="rounded" height={400} sx={{ borderRadius: 2 }} />
+        <div className="mb-6 h-[200px] animate-pulse rounded-2xl bg-surface-200"></div>
+        <div className="h-[400px] animate-pulse rounded-2xl bg-surface-200"></div>
       </AppLayout>
     );
   }
@@ -182,394 +149,250 @@ const DocumentDetailPage: React.FC = () => {
   if (!doc) {
     return (
       <AppLayout>
-        <Alert severity="error">Document not found.</Alert>
+        <div className="flex items-center gap-3 rounded-xl bg-red-50 p-4 text-sm font-medium text-red-800 ring-1 ring-red-200">
+          <AlertCircle className="h-5 w-5 shrink-0 text-red-500" />
+          <p>Document not found.</p>
+        </div>
       </AppLayout>
     );
   }
 
   return (
     <AppLayout>
-      {/* Back button */}
-      <Button
-        startIcon={<ArrowBack />}
+      <button
         onClick={() => navigate('/dashboard')}
-        sx={{ mb: 3, color: '#64748b', '&:hover': { backgroundColor: 'transparent', color: '#0f172a' } }}
-        disableRipple
+        className="mb-6 flex items-center gap-2 text-sm font-medium text-surface-500 hover:text-surface-900 transition-colors"
       >
+        <ArrowLeft className="h-4 w-4" />
         Back to Dashboard
-      </Button>
+      </button>
 
-      <Grid container spacing={4}>
+      <div className="grid gap-6 lg:grid-cols-12">
         {/* Left: Document Info */}
-        <Grid item xs={12} lg={4}>
-          <Card sx={{ mb: 3, boxShadow: 'none' }}>
-            <CardContent sx={{ p: 4 }}>
-              <Box sx={{ display: 'flex', gap: 1.5, alignItems: 'center', mb: 2 }}>
-                <Chip
-                  label={doc.complianceCategory}
-                  size="small"
-                  sx={{
-                    backgroundColor: doc.complianceCategory === 'Standard' ? '#ecfdf5' : '#e0e7ff',
-                    color: doc.complianceCategory === 'Standard' ? '#059669' : '#4338ca',
-                    border: `1px solid ${doc.complianceCategory === 'Standard' ? '#a7f3d0' : '#c7d2fe'}`,
-                    fontWeight: 600,
-                  }}
-                />
-              </Box>
-              <Typography variant="h5" fontWeight={700} gutterBottom sx={{ lineHeight: 1.3, color: '#0f172a' }}>
-                {doc.originalName}
-              </Typography>
-              <Typography variant="caption" color="#64748b">
-                Uploaded {new Date(doc.uploadDate).toLocaleDateString()}
-              </Typography>
+        <div className="lg:col-span-4 space-y-6">
+          <div className="glass-card p-6 sm:p-8">
+            <div className="mb-4 flex items-center gap-2">
+              <span className={`inline-flex items-center rounded-md px-2.5 py-0.5 text-xs font-semibold ring-1 ring-inset ${
+                doc.complianceCategory === 'Standard'
+                  ? 'bg-emerald-50 text-emerald-700 ring-emerald-600/20'
+                  : 'bg-indigo-50 text-indigo-700 ring-indigo-600/20'
+              }`}>
+                {doc.complianceCategory}
+              </span>
+            </div>
+            <h1 className="mb-2 text-2xl font-bold leading-tight tracking-tight text-surface-900">
+              {doc.originalName}
+            </h1>
+            <p className="text-xs text-surface-500">
+              Uploaded {new Date(doc.uploadDate).toLocaleDateString()}
+            </p>
 
-              <Divider sx={{ my: 3 }} />
+            <hr className="my-6 border-surface-200" />
 
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
-                <Topic sx={{ fontSize: 18, color: '#64748b' }} />
-                <Typography variant="subtitle2" fontWeight={600} color="#334155">
-                  Key Topics
-                </Typography>
-              </Box>
-              <Box sx={{ display: 'flex', gap: 0.75, flexWrap: 'wrap' }}>
-                {(doc.topics || []).map((t) => (
-                  <Chip
-                    key={t}
-                    label={t}
-                    size="small"
-                    sx={{
-                      backgroundColor: '#f8fafc',
-                      border: '1px solid #e2e8f0',
-                      fontSize: '0.75rem',
-                      color: '#475569',
-                    }}
-                  />
-                ))}
-              </Box>
-            </CardContent>
-          </Card>
+            <div className="mb-3 flex items-center gap-2">
+              <Hash className="h-4 w-4 text-surface-400" />
+              <h3 className="text-sm font-semibold text-surface-700">Key Topics</h3>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {(doc.topics || []).map((t) => (
+                <span
+                  key={t}
+                  className="inline-flex items-center rounded-md bg-surface-50 px-2.5 py-1 text-xs font-medium text-surface-600 ring-1 ring-inset ring-surface-200"
+                >
+                  {t}
+                </span>
+              ))}
+            </div>
+          </div>
 
-          <Card sx={{ boxShadow: 'none' }}>
-            <CardContent sx={{ p: 4 }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
-                <FormatQuote sx={{ fontSize: 18, color: '#64748b' }} />
-                <Typography variant="subtitle2" fontWeight={600} color="#334155">
-                  AI Summary
-                </Typography>
-              </Box>
-              <Typography variant="body2" sx={{ lineHeight: 1.7, color: '#475569' }}>
-                {doc.summary || 'No summary available.'}
-              </Typography>
-            </CardContent>
-          </Card>
-        </Grid>
+          <div className="glass-card p-6 sm:p-8">
+            <div className="mb-3 flex items-center gap-2">
+              <Quote className="h-4 w-4 text-surface-400" />
+              <h3 className="text-sm font-semibold text-surface-700">AI Summary</h3>
+            </div>
+            <p className="text-sm leading-relaxed text-surface-600">
+              {doc.summary || 'No summary available.'}
+            </p>
+          </div>
+        </div>
 
         {/* Right: Chat / Document Content */}
-        <Grid item xs={12} lg={8}>
-          <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column', boxShadow: 'none' }}>
-            {/* Tab Navigation */}
-            <Box sx={{ borderBottom: '1px solid #e2e8f0', backgroundColor: '#f8fafc' }}>
-              <Tabs
-                value={activeTab}
-                onChange={(e, newValue) => setActiveTab(newValue)}
-                sx={{
-                  '& .MuiTab-root': {
-                    textTransform: 'none',
-                    fontSize: '0.95rem',
-                    minHeight: 56,
-                    color: '#64748b',
-                    '&.Mui-selected': { color: '#2563eb' },
-                  },
-                  '& .MuiTabs-indicator': { backgroundColor: '#2563eb' },
-                }}
+        <div className="lg:col-span-8 flex flex-col glass-card h-[calc(100vh-140px)] min-h-[600px] overflow-hidden">
+          {/* Tab Navigation */}
+          <div className="flex border-b border-surface-200 bg-surface-50">
+            <button
+              onClick={() => setActiveTab(0)}
+              className={`flex flex-1 items-center justify-center gap-2 border-b-2 px-4 py-4 text-sm font-medium transition-colors ${
+                activeTab === 0
+                  ? 'border-primary-600 text-primary-600'
+                  : 'border-transparent text-surface-500 hover:bg-surface-100 hover:text-surface-700'
+              }`}
+            >
+              <Bot className="h-4 w-4" />
+              Q&A Analysis
+            </button>
+            <button
+              onClick={() => setActiveTab(1)}
+              className={`flex flex-1 items-center justify-center gap-2 border-b-2 px-4 py-4 text-sm font-medium transition-colors ${
+                activeTab === 1
+                  ? 'border-primary-600 text-primary-600'
+                  : 'border-transparent text-surface-500 hover:bg-surface-100 hover:text-surface-700'
+              }`}
+            >
+              <FileText className="h-4 w-4" />
+              Full Document
+            </button>
+          </div>
+
+          {/* Tab Content: Q&A Analysis */}
+          {activeTab === 0 && (
+            <>
+              <div className="border-b border-surface-200 bg-surface-50/50 p-4">
+                <div className="flex items-center gap-3">
+                  <Bot className="h-5 w-5 text-primary-600" />
+                  <div>
+                    <h2 className="text-sm font-semibold text-surface-900">Document Analysis Q&A</h2>
+                    <p className="text-xs text-surface-500">Ask questions — responses are grounded in document content with citations</p>
+                  </div>
+                </div>
+              </div>
+              
+              <div
+                ref={scrollRef}
+                id="chat-messages-area"
+                className="flex-1 overflow-y-auto p-4 sm:p-6 bg-white space-y-6"
               >
-                <Tab label="Q&A Analysis" icon={<SmartToy />} iconPosition="start" />
-                <Tab label="Full Document" icon={<Description />} iconPosition="start" />
-              </Tabs>
-            </Box>
+                {messages.length === 0 && (
+                  <div className="flex h-full flex-col items-center justify-center gap-4 text-center">
+                    <div className="rounded-full bg-surface-100 p-4">
+                      <Bot className="h-8 w-8 text-surface-400" />
+                    </div>
+                    <p className="text-sm text-surface-500">Ask anything about this document…</p>
+                  </div>
+                )}
 
-            {/* Tab Content: Q&A Analysis */}
-            {activeTab === 0 && (
-              <>
-                <CardContent sx={{ p: 3, borderBottom: '1px solid #e2e8f0', backgroundColor: '#f8fafc' }}>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                    <SmartToy sx={{ color: '#2563eb' }} />
-                    <Box>
-                      <Typography variant="subtitle1" fontWeight={600} color="#0f172a">
-                        Document Analysis Q&A
-                      </Typography>
-                      <Typography variant="caption" color="#64748b">
-                        Ask questions — responses are grounded in document content with citations
-                      </Typography>
-                    </Box>
-                  </Box>
-                </CardContent>
-                <Box
-                  ref={scrollRef}
-                  id="chat-messages-area"
-                  sx={{
-                    flex: 1,
-                    overflowY: 'auto',
-                    p: 4,
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: 3,
-                    minHeight: 400,
-                    maxHeight: 600,
-                    backgroundColor: '#ffffff',
-                  }}
-                >
-                  {messages.length === 0 && (
-                    <Box
-                      sx={{
-                        flex: 1,
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        gap: 2,
-                      }}
-                    >
-                      <Box sx={{ p: 2, borderRadius: '50%', backgroundColor: '#f1f5f9' }}>
-                        <SmartToy sx={{ fontSize: 32, color: '#94a3b8' }} />
-                      </Box>
-                      <Typography variant="body2" color="#64748b">
-                        Ask anything about this document…
-                      </Typography>
-                    </Box>
-                  )}
+                {messages.map((m, i) => (
+                  <div
+                    key={i}
+                    className={`flex gap-4 ${m.role === 'user' ? 'flex-row-reverse' : 'flex-row'}`}
+                  >
+                    <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${
+                      m.role === 'user' ? 'bg-surface-900 text-white' : 'bg-primary-50 text-primary-600'
+                    }`}>
+                      {m.role === 'user' ? <User className="h-4 w-4" /> : <Bot className="h-4 w-4" />}
+                    </div>
+                    
+                    <div className={`max-w-[85%] sm:max-w-[75%] space-y-2 ${m.role === 'user' ? 'text-right' : 'text-left'}`}>
+                      <div className={`rounded-2xl px-4 py-3 text-sm ${
+                        m.role === 'user'
+                          ? 'bg-surface-100 text-surface-900'
+                          : 'border border-surface-200 bg-white text-surface-800 shadow-sm prose prose-sm prose-slate max-w-none prose-p:leading-relaxed prose-pre:bg-surface-50 prose-pre:border prose-pre:border-surface-200'
+                      }`}>
+                        {m.role === 'user' ? (
+                          <p className="whitespace-pre-wrap">{m.content}</p>
+                        ) : (
+                          <ReactMarkdown>{extractCitationsFromContent(m.content).cleanContent}</ReactMarkdown>
+                        )}
+                      </div>
 
-                  {messages.map((m, i) => (
-                    <Box
-                      key={i}
-                      sx={{
-                        display: 'flex',
-                        gap: 2,
-                        alignItems: 'flex-start',
-                        flexDirection: m.role === 'user' ? 'row-reverse' : 'row',
-                      }}
-                    >
-                      <Avatar
-                        sx={{
-                          width: 36,
-                          height: 36,
-                          bgcolor: m.role === 'user' ? '#0f172a' : '#eff6ff',
-                          color: m.role === 'user' ? '#ffffff' : '#2563eb',
-                        }}
-                      >
-                        {m.role === 'user' ? <Person sx={{ fontSize: 18 }} /> : <SmartToy sx={{ fontSize: 18 }} />}
-                      </Avatar>
-                      <Box sx={{ maxWidth: '75%' }}>
-                        <Paper
-                          elevation={0}
-                          sx={{
-                            p: 2.5,
-                            borderRadius: 3,
-                            backgroundColor: m.role === 'user' ? '#f1f5f9' : '#ffffff',
-                            border: m.role === 'user' ? 'none' : '1px solid #e2e8f0',
-                          }}
-                        >
-                          {m.role === 'user' ? (
-                            <Typography variant="body2" sx={{ lineHeight: 1.65, whiteSpace: 'pre-wrap', color: '#1e293b' }}>
-                              {m.content}
-                            </Typography>
-                          ) : (
-                            <>
-                              <Box
-                                sx={{
-                                  '& p': { margin: '0.5em 0', lineHeight: 1.7, color: '#1e293b', fontSize: '0.875rem' },
-                                  '& p:first-of-type': { marginTop: 0 },
-                                  '& p:last-of-type': { marginBottom: 0 },
-                                  '& h1, & h2, & h3, & h4': { color: '#0f172a', fontWeight: 700, mt: 2, mb: 1 },
-                                  '& h2': { fontSize: '1.15rem', borderBottom: '1px solid #e2e8f0', pb: 0.5 },
-                                  '& h3': { fontSize: '1rem' },
-                                  '& strong': { color: '#0f172a', fontWeight: 600 },
-                                  '& ul, & ol': { pl: 3, my: 0.5, color: '#1e293b', fontSize: '0.875rem' },
-                                  '& li': { mb: 0.3, lineHeight: 1.65 },
-                                  '& blockquote': {
-                                    borderLeft: '3px solid #2563eb',
-                                    pl: 2,
-                                    ml: 0,
-                                    my: 1,
-                                    color: '#475569',
-                                    fontStyle: 'italic',
-                                    backgroundColor: '#f8fafc',
-                                    py: 1,
-                                    pr: 2,
-                                    borderRadius: '0 6px 6px 0',
-                                    '& p': { margin: '0.25em 0' },
-                                  },
-                                  '& code': {
-                                    backgroundColor: '#f1f5f9',
-                                    border: '1px solid #e2e8f0',
-                                    borderRadius: '4px',
-                                    px: 0.75,
-                                    py: 0.25,
-                                    fontSize: '0.8rem',
-                                    fontFamily: 'monospace',
-                                    color: '#334155',
-                                  },
-                                  '& pre': {
-                                    backgroundColor: '#f8fafc',
-                                    border: '1px solid #e2e8f0',
-                                    borderRadius: '8px',
-                                    p: 2,
-                                    overflowX: 'auto',
-                                    my: 1,
-                                    '& code': { border: 'none', p: 0, backgroundColor: 'transparent' },
-                                  },
-                                  '& a': { color: '#2563eb', textDecoration: 'none', '&:hover': { textDecoration: 'underline' } },
-                                  '& hr': { border: 'none', borderTop: '1px solid #e2e8f0', my: 1.5 },
-                                  '& table': { borderCollapse: 'collapse', width: '100%', my: 1, fontSize: '0.8rem' },
-                                  '& th': { borderBottom: '2px solid #e2e8f0', p: 1, textAlign: 'left', fontWeight: 600, color: '#0f172a' },
-                                  '& td': { borderBottom: '1px solid #f1f5f9', p: 1, color: '#334155' },
-                                }}
-                              >
-                                <ReactMarkdown>{extractCitationsFromContent(m.content).cleanContent}</ReactMarkdown>
-                              </Box>
-                            </>
-                          )}
-                        </Paper>
+                      {m.role === 'assistant' && (() => {
+                        const { citations: extractedCitations } = extractCitationsFromContent(m.content);
+                        const allSources = [...(m.sources || []), ...extractedCitations];
+                        const uniqueSources = Array.from(
+                          new Map(
+                            allSources.map((s) => [`${s.section}-${s.pageNumber}`, s])
+                          ).values()
+                        );
 
-                        {(() => {
-                          const { citations: extractedCitations } = extractCitationsFromContent(m.content);
-                          const allSources = [...(m.sources || []), ...extractedCitations];
-                          const uniqueSources = Array.from(
-                            new Map(
-                              allSources.map((s) => [`${s.section}-${s.pageNumber}`, s])
-                            ).values()
-                          );
+                        return (
+                          uniqueSources.length > 0 && (
+                            <div className="flex flex-wrap gap-2 pt-1">
+                              {uniqueSources.map((s, si) => (
+                                <span
+                                  key={si}
+                                  className="inline-flex items-center rounded-md bg-surface-50 px-2 py-1 text-[10px] font-medium text-surface-600 ring-1 ring-inset ring-surface-200"
+                                >
+                                  § {s.section} (p.{s.pageNumber})
+                                </span>
+                              ))}
+                            </div>
+                          )
+                        );
+                      })()}
+                    </div>
+                  </div>
+                ))}
 
-                          return (
-                            uniqueSources.length > 0 && (
-                              <Box sx={{ mt: 1.5, display: 'flex', gap: 1, flexWrap: 'wrap' }}>
-                                {uniqueSources.map((s, si) => (
-                                  <Chip
-                                    key={si}
-                                    label={`§ ${s.section} (p.${s.pageNumber})`}
-                                    size="small"
-                                    sx={{
-                                      fontSize: '0.7rem',
-                                      height: 22,
-                                      backgroundColor: '#f8fafc',
-                                      border: '1px solid #e2e8f0',
-                                      color: '#64748b',
-                                    }}
-                                  />
-                                ))}
-                              </Box>
-                            )
-                          );
-                        })()}
-                      </Box>
-                    </Box>
-                  ))}
+                {querying && (
+                  <div className="flex items-center gap-3 text-surface-500">
+                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary-50 text-primary-600">
+                      <Bot className="h-4 w-4" />
+                    </div>
+                    <div className="flex gap-1">
+                      <div className="h-2 w-2 animate-bounce rounded-full bg-surface-300" style={{ animationDelay: '0ms' }}></div>
+                      <div className="h-2 w-2 animate-bounce rounded-full bg-surface-300" style={{ animationDelay: '150ms' }}></div>
+                      <div className="h-2 w-2 animate-bounce rounded-full bg-surface-300" style={{ animationDelay: '300ms' }}></div>
+                    </div>
+                  </div>
+                )}
+              </div>
 
-                  {querying && (
-                    <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
-                      <Avatar sx={{ width: 36, height: 36, bgcolor: '#eff6ff', color: '#2563eb' }}>
-                        <SmartToy sx={{ fontSize: 18 }} />
-                      </Avatar>
-                      <CircularProgress size={20} sx={{ color: '#cbd5e1' }} />
-                      <Typography variant="caption" color="#94a3b8">
-                        Analyzing document…
-                      </Typography>
-                    </Box>
-                  )}
-                </Box>
-
-                {/* Input */}
-                <Box
-                  sx={{
-                    p: 3,
-                    borderTop: '1px solid #e2e8f0',
-                    backgroundColor: '#ffffff',
-                    display: 'flex',
-                    gap: 2,
-                  }}
-                >
-                  <TextField
+              {/* Input */}
+              <div className="border-t border-surface-200 bg-white p-4">
+                <div className="flex items-end gap-3 rounded-xl border border-surface-200 bg-surface-50 p-2 focus-within:border-primary-500 focus-within:ring-1 focus-within:ring-primary-500">
+                  <textarea
                     id="chat-input"
-                    fullWidth
+                    rows={1}
+                    className="max-h-[120px] min-h-[40px] w-full resize-none border-none bg-transparent px-2 py-2 text-sm text-surface-900 placeholder:text-surface-400 focus:outline-none focus:ring-0"
                     placeholder="Ask a question about this document…"
                     value={input}
-                    onChange={(e) => setInput(e.target.value)}
-                    onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend(); } }}
-                    size="small"
-                    multiline
-                    maxRows={4}
-                    sx={{
-                      '& .MuiOutlinedInput-root': {
-                        backgroundColor: '#f8fafc',
+                    onChange={(e) => {
+                      setInput(e.target.value);
+                      e.target.style.height = 'auto';
+                      e.target.style.height = `${e.target.scrollHeight}px`;
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault();
+                        handleSend();
                       }
                     }}
                   />
-                  <Box sx={{ display: 'flex', alignItems: 'flex-end' }}>
-                    <IconButton
-                      id="chat-send-btn"
-                      onClick={handleSend}
-                      disabled={!input.trim() || querying}
-                      sx={{
-                        backgroundColor: '#0f172a',
-                        color: '#ffffff',
-                        borderRadius: 2,
-                        p: 1.25,
-                        '&:hover': { backgroundColor: '#1e293b' },
-                        '&:disabled': { backgroundColor: '#e2e8f0', color: '#94a3b8' },
-                      }}
-                    >
-                      <Send sx={{ fontSize: 20 }} />
-                    </IconButton>
-                  </Box>
-                </Box>
-              </>
-            )}
-
-            {/* Tab Content: Full Document */}
-            {activeTab === 1 && (
-              <Box
-                sx={{
-                  flex: 1,
-                  overflowY: 'auto',
-                  p: 4,
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: 2,
-                  backgroundColor: '#ffffff',
-                }}
-              >
-                {loadingContent ? (
-                  <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                    <Skeleton variant="rounded" height={200} />
-                    <Skeleton variant="rounded" height={200} />
-                    <Skeleton variant="rounded" height={200} />
-                  </Box>
-                ) : fullText ? (
-                  <Paper
-                    elevation={0}
-                    sx={{
-                      p: 3,
-                      backgroundColor: '#f8fafc',
-                      border: '1px solid #e2e8f0',
-                      borderRadius: 2,
-                      whiteSpace: 'pre-wrap',
-                      wordWrap: 'break-word',
-                      lineHeight: 1.8,
-                      color: '#334155',
-                      fontSize: '0.9rem',
-                      fontFamily: 'Courier New, monospace',
-                    }}
+                  <button
+                    id="chat-send-btn"
+                    onClick={handleSend}
+                    disabled={!input.trim() || querying}
+                    className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-surface-900 text-white transition-colors hover:bg-surface-800 disabled:bg-surface-200 disabled:text-surface-400"
                   >
-                    {fullText}
-                  </Paper>
-                ) : (
-                  <Alert severity="warning">Unable to load document content</Alert>
-                )}
-              </Box>
-            )}
-          </Card>
-        </Grid>
-      </Grid>
+                    <Send className="h-4 w-4" />
+                  </button>
+                </div>
+              </div>
+            </>
+          )}
+
+          {/* Tab Content: Full Document */}
+          {activeTab === 1 && (
+            <div className="flex-1 overflow-y-auto p-6 bg-white">
+              {loadingContent ? (
+                <div className="space-y-4">
+                  <div className="h-48 animate-pulse rounded-xl bg-surface-100"></div>
+                  <div className="h-48 animate-pulse rounded-xl bg-surface-100"></div>
+                  <div className="h-48 animate-pulse rounded-xl bg-surface-100"></div>
+                </div>
+              ) : fullText ? (
+                <div className="rounded-xl border border-surface-200 bg-surface-50 p-6 font-mono text-sm leading-relaxed text-surface-700 whitespace-pre-wrap break-words">
+                  {fullText}
+                </div>
+              ) : (
+                <div className="rounded-xl bg-yellow-50 p-4 text-sm text-yellow-800 ring-1 ring-yellow-200">
+                  Unable to load document content
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
     </AppLayout>
   );
 };
