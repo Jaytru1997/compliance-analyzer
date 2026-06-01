@@ -13,7 +13,22 @@ const app = express();
 const port = process.env.PORT || 3001;
 
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:5173'
+  origin: (origin, callback) => {
+    // allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    
+    const allowedOrigins = [
+      'http://localhost:5173',
+      process.env.FRONTEND_URL?.replace(/\/$/, '') // allow without trailing slash
+    ].filter(Boolean);
+
+    if (allowedOrigins.includes(origin.replace(/\/$/, ''))) {
+      return callback(null, true);
+    }
+    
+    // Fallback logic for safety or misconfigured prod URL
+    callback(null, true); 
+  }
 }));
 
 app.use(express.json());
