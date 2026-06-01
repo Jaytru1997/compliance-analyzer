@@ -1,22 +1,19 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
+import { BrowserRouter } from 'react-router-dom';
 import { DocumentMetadata } from '@compliance-analyzer/shared';
-
-// IMPORTANT: Mock react-router-dom BEFORE importing DocumentCard
-// This must come before the DocumentCard import to prevent import errors
-vi.mock('react-router-dom', () => ({
-    useNavigate: () => vi.fn(),
-}));
 
 import DocumentCard from '../DocumentCard';
 
 // Create a test theme
 const testTheme = createTheme();
 
-// Wrapper component for tests
+// Wrapper component for tests - includes BrowserRouter for Router context
 const TestWrapper = ({ children }: { children: React.ReactNode }) => (
-    <ThemeProvider theme={testTheme}>{children}</ThemeProvider>
+    <BrowserRouter>
+        <ThemeProvider theme={testTheme}>{children}</ThemeProvider>
+    </BrowserRouter>
 );
 
 const mockDoc: DocumentMetadata = {
