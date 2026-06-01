@@ -9,14 +9,17 @@ interface User {
 
 interface AuthState {
   user: User | null;
+  isHydrated: boolean;
   login: (username: string, password: string) => Promise<boolean>;
   logout: () => void;
+  setHydrated: (value: boolean) => void;
 }
 
 export const useAuthStore = create<AuthState>()(
   persist(
     (set, get) => ({
       user: null,
+      isHydrated: false,
 
       login: async (username: string, password: string) => {
         try {
@@ -37,12 +40,21 @@ export const useAuthStore = create<AuthState>()(
       logout: () => {
         set({ user: null });
       },
+
+      setHydrated: (value: boolean) => {
+        set({ isHydrated: value });
+      },
     }),
 
     {
       name: 'auth-storage',                    // unique key in localStorage
       storage: createJSONStorage(() => localStorage), // or sessionStorage
       partialize: (state) => ({ user: state.user }), // only persist user
+      onRehydrateStorage: () => (state) => {
+        if (state) {
+          state.setHydrated(true);
+        }
+      },
     }
   )
 );
