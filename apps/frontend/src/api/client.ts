@@ -1,10 +1,9 @@
 import axios from 'axios';
-import * as dotenv from 'dotenv';
 import { DocumentMetadata, GapAnalysisResponse } from '@compliance-analyzer/shared';
 
 // const api = axios.create({ baseURL: '/api' });
 const api = axios.create({
-  baseURL: process.env.VITE_API_URL || 'http://localhost:3001',
+  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:3001',
 });
 
 // ── Auth ────────────────────────────────────────────────
